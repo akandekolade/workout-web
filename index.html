@@ -18,9 +18,12 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;overscroll-behavior:none}
 .app{display:flex;flex-direction:column;height:100vh;height:100dvh}
-.header{padding:calc(var(--safe-top) + 14px) 20px 14px;background:var(--bg);border-bottom:.5px solid var(--border);flex-shrink:0}
+.header{padding:calc(var(--safe-top) + 14px) 20px 14px;background:var(--bg);border-bottom:.5px solid var(--border);flex-shrink:0;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .header h1{font-size:22px;font-weight:700;letter-spacing:-.5px}
 .header-sub{font-size:13px;color:var(--muted);margin-top:2px}
+.header-account{flex-shrink:0;text-align:right;padding-top:2px}
+.header-account-btn{background:var(--surface);border:.5px solid var(--border);color:var(--text);font-size:11.5px;font-weight:600;padding:7px 12px;border-radius:20px;cursor:pointer}
+.header-account-email{font-size:10.5px;color:var(--muted);margin-bottom:4px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--safe-bottom) + 72px)}
 .nav{position:fixed;bottom:0;left:0;right:0;padding-bottom:var(--safe-bottom);background:rgba(15,15,15,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:.5px solid var(--border);display:flex;z-index:100}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0;font-size:10px;color:var(--muted);cursor:pointer;border:none;background:none}
@@ -131,6 +134,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .onboard-form button{width:100%;padding:14px;border-radius:10px;border:none;background:var(--arms);color:#fff;font-weight:700;font-size:15px;margin-top:6px}
 .onboard-form button:disabled{opacity:.4}
 .auth-input{width:100%;background:var(--surface);border:.5px solid var(--border);border-radius:8px;padding:9px;color:var(--text);font-size:13px;margin-bottom:8px}
+.link-btn{background:none;border:none;color:var(--arms);font-size:13px;cursor:pointer;padding:8px 0;text-align:center;width:100%}
+.link-btn.muted{color:var(--muted);font-size:12px}
+.bmi-row{display:flex;align-items:center;gap:10px;margin-top:10px}
+.bmi-value{font-size:24px;font-weight:700}
+.bmi-badge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600}
 </style>
 </head>
 <body>
@@ -150,9 +158,26 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
     <button id="onboard-submit" onclick="completeOnboarding()" disabled>Get started</button>
   </div>
 </div>
+<div class="onboard-overlay" id="login-overlay" hidden>
+  <div class="onboard-title" id="login-title">Welcome back</div>
+  <div class="onboard-sub" id="login-sub">Log in to restore your data, or start fresh on this device.</div>
+  <div class="onboard-form">
+    <label for="login-email">Email</label>
+    <input type="email" id="login-email" placeholder="you@example.com"/>
+    <label for="login-password">Password</label>
+    <input type="password" id="login-password" placeholder="Password"/>
+    <button id="login-submit" onclick="submitAuth()">Log in</button>
+    <div class="info-body" id="login-error" style="margin-top:8px;color:#e87a50"></div>
+    <button class="link-btn" id="login-mode-toggle" onclick="toggleAuthMode()">New here? Sign up instead</button>
+    <button class="link-btn muted" id="login-skip" onclick="skipLogin()">Continue without an account</button>
+  </div>
+</div>
 <div class="app">
   <div class="header">
     <div><h1>One more Kilo!</h1><div class="header-sub" id="header-sub">Ectomorph mass builder</div></div>
+    <div class="header-account" id="header-account">
+      <button class="header-account-btn" id="header-account-btn" onclick="headerAccountClick()">Log in</button>
+    </div>
   </div>
   <div class="scroll">
 
@@ -260,17 +285,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
     <div id="tab-progress" class="section">
       <div class="section-heading">Account</div>
       <div class="info-card">
-        <div id="account-signed-out">
-          <input type="email" class="auth-input" id="auth-email" placeholder="Email"/>
-          <input type="password" class="auth-input" id="auth-password" placeholder="Password"/>
-          <div class="ex-actions">
-            <button class="ex-action-btn" onclick="signUp()">Sign up</button>
-            <button class="ex-action-btn" onclick="logIn()">Log in</button>
-          </div>
-          <div class="info-body" id="auth-error" style="margin-top:8px;color:#e87a50"></div>
-          <div class="info-body" style="margin-top:8px">Sign in to back up your data to the cloud so it survives reinstalling the app.</div>
+        <div id="account-status-signed-out">
+          <div class="info-body">Not backed up to the cloud yet.</div>
+          <div class="ex-actions" style="margin-top:10px"><button class="ex-action-btn" onclick="headerAccountClick()">Log in / Sign up</button></div>
         </div>
-        <div id="account-signed-in" hidden>
+        <div id="account-status-signed-in" hidden>
           <div class="info-title">Signed in as <span id="account-email"></span></div>
           <div class="info-body" id="sync-status">Synced</div>
           <div class="ex-actions" style="margin-top:10px"><button class="ex-action-btn" onclick="logOut()">Log out</button></div>
@@ -281,6 +300,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
       <div class="info-card">
         <div class="info-title">Body type: <span id="profile-bodytype-label"></span></div>
         <div class="info-body">Height: <span id="profile-height-label"></span> cm</div>
+        <div class="bmi-row">
+          <div class="bmi-value" id="bmi-value">—</div>
+          <span class="bmi-badge" id="bmi-badge"></span>
+        </div>
+        <div class="info-body" id="bmi-note" style="margin-top:4px"></div>
         <div class="ex-actions" style="margin-top:12px">
           <button class="ex-action-btn" onclick="openBodyTypePicker()">Switch body type</button>
           <button class="ex-action-btn" onclick="toggleWeightPanel()">+ Log weight</button>
@@ -646,23 +670,58 @@ function getWeightLog() { try { return JSON.parse(localStorage.getItem('wk_weigh
 function saveWeightLog(arr) { localStorage.setItem('wk_weightlog', JSON.stringify(arr)); syncToCloud(); }
 
 // ---- cloud backup (Firebase) ----
-function showAuthError(msg) { const el = document.getElementById('auth-error'); if (el) el.textContent = msg; }
+let authMode = 'login';
 
-function signUp() {
-  const email = document.getElementById('auth-email').value.trim();
-  const pw = document.getElementById('auth-password').value;
-  showAuthError('');
-  if (!email || !pw) { showAuthError('Enter an email and password.'); return; }
-  auth.createUserWithEmailAndPassword(email, pw).catch(e => showAuthError(e.message));
+function headerAccountClick() { if (!currentUser) openLoginOverlay(false); }
+
+function openLoginOverlay(isInitial) {
+  authMode = 'login';
+  updateAuthModeUI();
+  document.getElementById('login-error').textContent = '';
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-password').value = '';
+  document.getElementById('login-skip').style.display = isInitial ? '' : 'none';
+  document.getElementById('login-overlay').hidden = false;
 }
-function logIn() {
-  const email = document.getElementById('auth-email').value.trim();
-  const pw = document.getElementById('auth-password').value;
-  showAuthError('');
-  if (!email || !pw) { showAuthError('Enter an email and password.'); return; }
-  auth.signInWithEmailAndPassword(email, pw).catch(e => showAuthError(e.message));
+function closeLoginOverlay() { document.getElementById('login-overlay').hidden = true; }
+
+function skipLogin() {
+  closeLoginOverlay();
+  if (!getProfile()) document.getElementById('onboard-overlay').hidden = false;
+}
+
+function toggleAuthMode() {
+  authMode = authMode === 'login' ? 'signup' : 'login';
+  updateAuthModeUI();
+}
+function updateAuthModeUI() {
+  const isLogin = authMode === 'login';
+  document.getElementById('login-title').textContent = isLogin ? 'Welcome back' : 'Create your account';
+  document.getElementById('login-sub').textContent = isLogin ? 'Log in to restore your data, or start fresh on this device.' : 'Sign up to back up your data to the cloud so it survives reinstalling the app.';
+  document.getElementById('login-submit').textContent = isLogin ? 'Log in' : 'Sign up';
+  document.getElementById('login-mode-toggle').textContent = isLogin ? 'New here? Sign up instead' : 'Already have an account? Log in';
+}
+
+function submitAuth() {
+  const email = document.getElementById('login-email').value.trim();
+  const pw = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  errEl.textContent = '';
+  if (!email || !pw) { errEl.textContent = 'Enter an email and password.'; return; }
+  const action = authMode === 'login' ? auth.signInWithEmailAndPassword(email, pw) : auth.createUserWithEmailAndPassword(email, pw);
+  action.catch(e => { errEl.textContent = e.message; });
 }
 function logOut() { auth.signOut(); }
+
+function renderHeaderAccount() {
+  const el = document.getElementById('header-account');
+  if (!el) return;
+  if (currentUser) {
+    el.innerHTML = `<div class="header-account-email">${currentUser.email}</div><button class="header-account-btn" onclick="logOut()">Log out</button>`;
+  } else {
+    el.innerHTML = `<button class="header-account-btn" onclick="headerAccountClick()">Log in</button>`;
+  }
+}
 
 function setSyncStatus(text) { const el = document.getElementById('sync-status'); if (el) el.textContent = text; }
 
@@ -685,6 +744,7 @@ function applyCloudState(data) {
   if (data.weightlog) saveWeightLog(data.weightlog);
   const profile = getProfile();
   document.getElementById('onboard-overlay').hidden = true;
+  closeLoginOverlay();
   if (profile) applyBodyType(profile.bodyType);
 }
 
@@ -695,8 +755,10 @@ function pullFromCloud() {
     if (doc.exists) {
       applyCloudState(doc.data());
       setSyncStatus('Synced');
-    } else {
+    } else if (getProfile()) {
       syncToCloudNow();
+    } else {
+      document.getElementById('onboard-overlay').hidden = false;
     }
   }).catch(() => setSyncStatus('Sync error — will retry'));
 }
@@ -716,13 +778,15 @@ function syncToCloudNow() {
 
 auth.onAuthStateChanged(user => {
   currentUser = user;
-  const outEl = document.getElementById('account-signed-out');
-  const inEl = document.getElementById('account-signed-in');
+  renderHeaderAccount();
+  const outEl = document.getElementById('account-status-signed-out');
+  const inEl = document.getElementById('account-status-signed-in');
   if (user) {
     if (outEl) outEl.hidden = true;
     if (inEl) inEl.hidden = false;
     const emailEl = document.getElementById('account-email');
     if (emailEl) emailEl.textContent = user.email;
+    closeLoginOverlay();
     pullFromCloud();
   } else {
     if (outEl) outEl.hidden = false;
@@ -807,6 +871,35 @@ function updateProfileLabels() {
   renderWeightHistory();
 }
 
+// ---- BMI ----
+function renderBMI() {
+  const valEl = document.getElementById('bmi-value');
+  const badgeEl = document.getElementById('bmi-badge');
+  const noteEl = document.getElementById('bmi-note');
+  if (!valEl || !badgeEl) return;
+  const profile = getProfile();
+  const log = getWeightLog().slice().sort((a, b) => b.date.localeCompare(a.date));
+  if (!profile || !profile.heightCm || !log.length) {
+    valEl.textContent = '—';
+    badgeEl.textContent = '';
+    badgeEl.style.background = 'transparent';
+    if (noteEl) noteEl.textContent = 'Log your weight to see your BMI.';
+    return;
+  }
+  const heightM = profile.heightCm / 100;
+  const bmi = log[0].weight / (heightM * heightM);
+  let category, color;
+  if (bmi < 18.5) { category = 'Underweight'; color = '#4a8fd4'; }
+  else if (bmi < 25) { category = 'Normal'; color = '#5db87a'; }
+  else if (bmi < 30) { category = 'Overweight'; color = '#e8b34a'; }
+  else { category = 'Obese'; color = '#e87a50'; }
+  valEl.textContent = Math.round(bmi * 10) / 10;
+  badgeEl.textContent = category;
+  badgeEl.style.background = color + '26';
+  badgeEl.style.color = color;
+  if (noteEl) noteEl.textContent = `Based on your last logged weight (${log[0].weight}kg) and height (${profile.heightCm}cm).`;
+}
+
 // ---- weight logging ----
 function toggleWeightPanel() {
   const panel = document.getElementById('weight-log-panel');
@@ -826,6 +919,7 @@ function logWeight() {
 }
 function renderWeightHistory() {
   const histEl = document.getElementById('weight-history');
+  renderBMI();
   if (!histEl) return;
   const log = getWeightLog().slice().sort((a, b) => b.date.localeCompare(a.date));
   if (!log.length) { histEl.innerHTML = ''; return; }
@@ -1119,11 +1213,11 @@ function showDay(day, el) {
 }
 
 window.addEventListener('load', () => {
+  document.getElementById('onboard-height').addEventListener('input', checkOnboardReady);
+  document.getElementById('onboard-weight').addEventListener('input', checkOnboardReady);
   const profile = getProfile();
   if (!profile) {
-    document.getElementById('onboard-overlay').hidden = false;
-    document.getElementById('onboard-height').addEventListener('input', checkOnboardReady);
-    document.getElementById('onboard-weight').addEventListener('input', checkOnboardReady);
+    openLoginOverlay(true);
     return;
   }
   applyBodyType(profile.bodyType);
