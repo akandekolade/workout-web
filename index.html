@@ -181,17 +181,27 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 <body>
 <div class="onboard-overlay" id="onboard-overlay" hidden>
   <div class="onboard-title" id="onboard-title">Welcome to One more Kilo!</div>
-  <div class="onboard-sub">Pick the body type that best matches your goal — this sets your 4-day training split. You can switch it anytime from the Progress tab.</div>
+  <div class="onboard-sub">Pick how often you can train and the body type that best matches your goal — this builds your weekly plan. You can change both anytime from the Progress tab.</div>
+  <div class="seg-label" style="margin-top:0">How many days a week can you train?</div>
+  <div class="seg" id="onboard-days" style="margin-bottom:16px">
+    <button data-days="4" onclick="selectDaysCard(4)">4 days</button>
+    <button data-days="5" onclick="selectDaysCard(5)">5 days</button>
+    <button data-days="6" onclick="selectDaysCard(6)">6 days</button>
+    <button data-days="7" onclick="selectDaysCard(7)">7 days</button>
+  </div>
+  <div class="seg-label">Body type</div>
   <div id="bodytype-picker">
     <div class="bodytype-card" data-bt="ecto" onclick="selectBodyTypeCard('ecto')"><div class="bt-title">Ectomorph</div><div class="bt-body">Naturally lean, hard to gain weight. Heavy compound lifts, low reps, long rest, calorie surplus.</div></div>
     <div class="bodytype-card" data-bt="meso" onclick="selectBodyTypeCard('meso')"><div class="bt-title">Mesomorph</div><div class="bt-body">Naturally athletic. Balanced Push/Pull/Legs training, moderate reps, maintenance-to-slight-surplus.</div></div>
     <div class="bodytype-card" data-bt="endo" onclick="selectBodyTypeCard('endo')"><div class="bt-title">Endomorph</div><div class="bt-body">Gains muscle and fat easily. Higher-rep circuits, shorter rest, more cardio, calorie deficit.</div></div>
   </div>
   <div class="onboard-form">
-    <label for="onboard-height">Height (cm)</label>
-    <input type="number" id="onboard-height" min="100" max="250" placeholder="e.g. 175"/>
-    <label for="onboard-weight">Current weight (kg)</label>
-    <input type="number" id="onboard-weight" min="30" max="300" step="0.1" placeholder="e.g. 68"/>
+    <div id="onboard-hw">
+      <label for="onboard-height">Height (cm)</label>
+      <input type="number" id="onboard-height" min="100" max="250" placeholder="e.g. 175"/>
+      <label for="onboard-weight">Current weight (kg)</label>
+      <input type="number" id="onboard-weight" min="30" max="300" step="0.1" placeholder="e.g. 68"/>
+    </div>
     <button id="onboard-submit" onclick="completeOnboarding()" disabled>Get started</button>
   </div>
 </div>
@@ -236,62 +246,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
         <div class="progress-label"><span>This week's training</span><span id="week-progress-count">0/4 days</span></div>
         <div class="prog-track"><div class="prog-fill" id="week-progress-fill" style="width:0%;background:var(--primary)"></div></div>
       </div>
-      <div class="day-scroll">
-        <div class="day-chip active" style="--active-color:var(--chest)" onclick="showDay('chest',this)"><div class="day-num">Day 1</div><div class="day-name" id="day-name-chest">Chest & Tris</div><div class="day-dot"></div></div>
-        <div class="day-chip" style="--active-color:var(--legs)" onclick="showDay('legs',this)"><div class="day-num">Day 2</div><div class="day-name" id="day-name-legs">Legs</div><div class="day-dot"></div></div>
-        <div class="day-chip rest-chip"><div class="day-num">Day 3</div><div class="day-name">Rest</div><div class="day-dot" style="background:var(--muted)"></div></div>
-        <div class="day-chip" style="--active-color:var(--arms)" onclick="showDay('arms',this)"><div class="day-num">Day 4</div><div class="day-name" id="day-name-arms">Back & Arms</div><div class="day-dot"></div></div>
-        <div class="day-chip" style="--active-color:var(--full)" onclick="showDay('full',this)"><div class="day-num">Day 5</div><div class="day-name" id="day-name-full">Full Body</div><div class="day-dot"></div></div>
-        <div class="day-chip rest-chip"><div class="day-num">Day 6–7</div><div class="day-name">Rest</div><div class="day-dot" style="background:var(--muted)"></div></div>
-      </div>
-
-      <div id="ex-chest">
-        <div class="ex-section-label" id="section-label-chest">Chest, Triceps & Abs · Day 1</div>
-        <div class="week-check" id="week-check-wrap-chest" onclick="toggleDayDone('chest')">
-          <div class="week-check-box" id="week-check-chest"></div>
-          <div><div class="week-check-title">This week's session</div><div class="week-check-sub" id="week-check-sub-chest"></div></div>
-        </div>
-        <div class="day-progress" data-day-progress="chest"></div>
-        <div class="ex-card-list" data-day-list="chest"></div>
-      </div>
-
-      <div id="ex-legs" style="display:none">
-        <div class="ex-section-label" id="section-label-legs">Legs & Glutes · Day 2</div>
-        <div class="week-check" id="week-check-wrap-legs" onclick="toggleDayDone('legs')">
-          <div class="week-check-box" id="week-check-legs"></div>
-          <div><div class="week-check-title">This week's session</div><div class="week-check-sub" id="week-check-sub-legs"></div></div>
-        </div>
-        <div class="day-progress" data-day-progress="legs"></div>
-        <div class="ex-card-list" data-day-list="legs"></div>
-      </div>
-
-      <div id="ex-arms" style="display:none">
-        <div class="ex-section-label" id="section-label-arms">Back, Biceps & Shoulders · Day 4</div>
-        <div class="week-check" id="week-check-wrap-arms" onclick="toggleDayDone('arms')">
-          <div class="week-check-box" id="week-check-arms"></div>
-          <div><div class="week-check-title">This week's session</div><div class="week-check-sub" id="week-check-sub-arms"></div></div>
-        </div>
-        <div class="day-progress" data-day-progress="arms"></div>
-        <div class="ex-card-list" data-day-list="arms"></div>
-      </div>
-
-      <div id="ex-full" style="display:none">
-        <div class="ex-section-label" id="section-label-full">Full Body & Core · Day 5</div>
-        <div class="week-check" id="week-check-wrap-full" onclick="toggleDayDone('full')">
-          <div class="week-check-box" id="week-check-full"></div>
-          <div><div class="week-check-title">This week's session</div><div class="week-check-sub" id="week-check-sub-full"></div></div>
-        </div>
-        <div class="day-progress" data-day-progress="full"></div>
-        <div class="ex-card-list" data-day-list="full"></div>
-      </div>
-
-      <div id="ex-rest" style="display:none">
-        <div class="rest-screen">
-          <div class="rest-emoji">🌙</div>
-          <div class="rest-title">Rest day</div>
-          <div class="rest-body">Light walking, stretching, or yoga only. Muscles grow during recovery — protect this day.</div>
-        </div>
-      </div>
+      <div class="day-scroll" id="day-scroll"></div>
+      <div id="day-sections"></div>
     </div>
 
     <div id="tab-muscles" class="section">
@@ -384,6 +340,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
       <div class="section-heading" style="margin-top:8px">Profile</div>
       <div class="info-card">
         <div class="info-title">Body type: <span id="profile-bodytype-label"></span></div>
+        <div class="info-body">Plan: <span id="profile-days-label"></span> days/week</div>
         <div class="info-body">Height: <span id="profile-height-label"></span> cm</div>
         <div class="info-body">Weight: <span id="profile-weight-label">—</span></div>
         <div class="bmi-row">
@@ -392,7 +349,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
         </div>
         <div class="info-body" id="bmi-note" style="margin-top:4px"></div>
         <div class="ex-actions" style="margin-top:12px">
-          <button class="ex-action-btn" onclick="openBodyTypePicker()">Switch body type</button>
+          <button class="ex-action-btn" onclick="openBodyTypePicker()">Switch plan</button>
           <button class="ex-action-btn" onclick="toggleHeightPanel()">Edit height</button>
           <button class="ex-action-btn" onclick="toggleWeightPanel()">+ Log weight</button>
         </div>
@@ -530,7 +487,27 @@ const EXERCISES = [
   { bodyType:'endo', key:'plank-endo', day:'full', name:'Plank', badge:'Core', badgeClass:'badge-core', statColor:'c-full', sets:3, reps:'45–60s', repsLabel:'Hold', rest:30, tip:'Straight line head to heels — a staple core-and-conditioning hold.', img:'Plank/0.jpg' },
   { bodyType:'endo', key:'crunches', day:'full', name:'Crunches', badge:'Abs', badgeClass:'badge-core', statColor:'c-full', sets:3, reps:'20–25', rest:30, tip:'Small range of motion, keep the lower back pressed to the floor.', img:'Crunches/0.jpg' },
   { bodyType:'endo', key:'side-plank-pushup', day:'full', name:'Push-up to side plank', badge:'Full body', badgeClass:'badge-full', statColor:'c-full', sets:3, reps:'10 each', rest:30, tip:'One push-up, then rotate into a side plank — combines strength and core in one move.', img:'Push_Up_to_Side_Plank/0.jpg' },
-  { bodyType:'endo', key:'treadmill-jog', day:'full', name:'Treadmill jog', badge:'Cardio', badgeClass:'badge-core', statColor:'c-full', sets:1, reps:'15–20 min', repsLabel:'Time', rest:60, tip:'Steady-state finisher — this is where the calorie deficit comes from.', img:'Jogging_Treadmill/0.jpg' }
+  { bodyType:'endo', key:'treadmill-jog', day:'full', name:'Treadmill jog', badge:'Cardio', badgeClass:'badge-core', statColor:'c-full', sets:1, reps:'15–20 min', repsLabel:'Time', rest:60, tip:'Steady-state finisher — this is where the calorie deficit comes from.', img:'Jogging_Treadmill/0.jpg' },
+
+  { key:'arnold-press', name:'Arnold press', badge:'Shoulders', badgeClass:'badge-sh', statColor:'c-arms', sets:3, reps:'10–12', rest:75, tip:'Rotate palms from facing you to facing forward as you press — hits all three delt heads.', img:'Arnold_Dumbbell_Press/0.jpg' },
+  { key:'barbell-shrug', name:'Barbell shrug', badge:'Traps', badgeClass:'badge-back', statColor:'c-arms', sets:3, reps:'12–15', rest:60, tip:'Straight up and down, hold the top squeeze — no rolling the shoulders.', img:'Barbell_Shrug/0.jpg' },
+  { key:'dumbbell-flyes', name:'Dumbbell flyes', badge:'Isolation', badgeClass:'badge-chest', statColor:'c-chest', sets:3, reps:'10–12', rest:60, tip:'Wide arc, slight elbow bend, feel the chest stretch at the bottom.', img:'Dumbbell_Flyes/0.jpg' },
+  { key:'upright-row', name:'Upright row', badge:'Traps + delts', badgeClass:'badge-sh', statColor:'c-arms', sets:3, reps:'10–12', rest:60, tip:'Lead with the elbows, keep the bar close, stop at chin height.', img:'Upright_Barbell_Row/0.jpg' },
+  { key:'treadmill-walk', name:'Treadmill walk', badge:'Recovery', badgeClass:'badge-core', statColor:'c-full', sets:1, reps:'30–40 min', repsLabel:'Time', rest:60, tip:'Brisk pace, upright posture — active recovery that speeds up muscle repair.', img:'Walking_Treadmill/0.jpg' },
+  { key:'elliptical', name:'Elliptical', badge:'Cardio', badgeClass:'badge-core', statColor:'c-full', sets:1, reps:'15–20 min', repsLabel:'Time', rest:60, tip:'Low-impact steady cardio — keep a pace where you can still hold a conversation.', img:'Elliptical_Trainer/0.jpg' },
+  { key:'glute-bridge', name:'Glute bridge', badge:'Glutes', badgeClass:'badge-legs', statColor:'c-legs', sets:3, reps:'15–20', rest:30, tip:'Drive through the heels, squeeze the glutes hard at the top for a second.', img:'Butt_Lift_Bridge/0.jpg' },
+  { key:'superman', name:'Superman', badge:'Lower back', badgeClass:'badge-core', statColor:'c-full', sets:3, reps:'12–15', rest:30, tip:'Lift arms, chest, and legs together; squeeze your lower back at the top.', img:'Superman/0.jpg' },
+  { key:'preacher-curl', name:'Preacher curl', badge:'Biceps', badgeClass:'badge-arms', statColor:'c-arms', sets:3, reps:'10–12', rest:60, tip:'The pad removes all momentum — full stretch at the bottom, squeeze at the top.', img:'Preacher_Curl/0.jpg' },
+  { key:'good-morning', name:'Good morning', badge:'Posterior chain', badgeClass:'badge-legs', statColor:'c-legs', sets:3, reps:'10–12', rest:75, tip:'Light weight, hips back, flat back — hamstrings and lower back do the work.', img:'Good_Morning/0.jpg' },
+  { key:'cat-stretch', name:'Cat stretch', badge:'Mobility', badgeClass:'badge-core', statColor:'c-full', sets:3, reps:'15s', repsLabel:'Hold', rest:15, tip:'Round the spine fully, let the head drop, breathe slowly.', img:'Cat_Stretch/0.jpg' },
+  { key:'hamstring-calf-stretch', name:'Hamstring & calf stretch', badge:'Mobility', badgeClass:'badge-core', statColor:'c-legs', sets:2, reps:'20s each', repsLabel:'Hold', rest:15, tip:'Front leg straight, toes up, lean forward gently — never bounce.', img:'Standing_Hamstring_and_Calf_Stretch/0.jpg' },
+  { key:'chest-shoulder-stretch', name:'Chest & shoulder stretch', badge:'Mobility', badgeClass:'badge-core', statColor:'c-chest', sets:2, reps:'20s', repsLabel:'Hold', rest:15, tip:'Wide grip on a stick or towel, lift up and behind your head slowly.', img:'Chest_And_Front_Of_Shoulder_Stretch/0.jpg' },
+  { key:'seated-triceps-press', name:'Seated triceps press', badge:'Triceps', badgeClass:'badge-tri', statColor:'c-chest', sets:3, reps:'10–12', rest:60, tip:'Elbows in and pointed at the ceiling; only the forearms move.', img:'Seated_Triceps_Press/0.jpg' },
+  { key:'stationary-bike', name:'Stationary bike', badge:'Cardio', badgeClass:'badge-core', statColor:'c-full', sets:1, reps:'15–20 min', repsLabel:'Time', rest:60, tip:'Moderate resistance, steady cadence — easy on the joints.', img:'Bicycling_Stationary/0.jpg' },
+  { key:'reverse-crunch', name:'Reverse crunch', badge:'Abs', badgeClass:'badge-core', statColor:'c-full', sets:3, reps:'12–15', rest:30, tip:'Roll the pelvis back and bring knees to chest — no swinging the legs.', img:'Reverse_Crunch/0.jpg' },
+  { key:'lying-leg-raise', name:'Lying leg raise', badge:'Lower abs', badgeClass:'badge-core', statColor:'c-full', sets:3, reps:'12–15', rest:45, tip:'Legs straight, raise to 90 degrees, lower slowly without arching your back.', img:'Flat_Bench_Lying_Leg_Raise/0.jpg' },
+  { key:'dumbbell-lunges', name:'Dumbbell lunges', badge:'Quads + glutes', badgeClass:'badge-legs', statColor:'c-legs', sets:3, reps:'10 each', rest:60, tip:'Torso upright, front shin vertical, push through the front heel.', img:'Dumbbell_Lunges/0.jpg' },
+  { key:'barbell-lunge', name:'Barbell lunge', badge:'Unilateral', badgeClass:'badge-legs', statColor:'c-legs', sets:3, reps:'8 each', rest:75, tip:'Heavier than dumbbell lunges — use a rack, keep the knee behind the toes.', img:'Barbell_Lunge/0.jpg' }
 ];
 
 // Written form cues per exercise, sourced from the free-exercise-db (CC0) dataset
@@ -595,31 +572,136 @@ const EXERCISE_STEPS = {
   'plank-endo': ["Get into a prone position supported on your toes and forearms, elbows directly below your shoulders.","Keep your body in a straight line and hold the position for the prescribed time."],
   'crunches': ["Lie on your back, knees bent, feet flat on the floor, hands lightly beside your head. This is your starting position.","Exhale and curl your shoulders up off the floor a few inches, contracting your abs. Keep your lower back on the floor.","Hold a second at the top, then inhale and lower back down.","Repeat for the prescribed reps."],
   'side-plank-pushup': ["Start in a push-up position, hands just outside shoulder width. This is your starting position.","Perform one push-up, keeping your body straight as you descend.","As you push back up, rotate onto one side into a side plank, reaching the top arm toward the ceiling.","Return to the push-up position and repeat, alternating sides each rep."],
-  'treadmill-jog': ["Step onto the treadmill and select a manual pace or program.","Maintain an upright posture and a steady jogging pace for the prescribed time, only holding the rails when necessary."]
+  'treadmill-jog': ["Step onto the treadmill and select a manual pace or program.","Maintain an upright posture and a steady jogging pace for the prescribed time, only holding the rails when necessary."],
+  'arnold-press': ["Sit on a bench with back support holding two dumbbells at upper chest level, palms facing your body, elbows bent — like the top of a curl. This is your starting position.","Press the dumbbells up while rotating your palms until they face forward.","Continue until your arms are extended overhead, exhaling as you press.","Pause a second at the top, then lower back down while rotating your palms back toward you, inhaling as you go.","Repeat for the prescribed reps."],
+  'barbell-shrug': ["Stand straight, feet shoulder width, holding a barbell in front of you with an overhand grip just wider than shoulder width. This is your starting position.","Raise your shoulders straight up as high as possible as you exhale, holding the squeeze a second. Don't use your biceps.","Lower slowly back to the starting position as you inhale.","Repeat for the prescribed reps."],
+  'dumbbell-flyes': ["Lie on a flat bench with a dumbbell in each hand, pressed up above you at shoulder width, palms facing each other, just short of lockout. This is your starting position.","With a slight fixed bend in the elbows, lower your arms out to the sides in a wide arc until you feel a chest stretch. Inhale as you lower.","Bring your arms back up along the same arc, squeezing your chest and exhaling.","Hold a second at the top and repeat for the prescribed reps."],
+  'upright-row': ["Grasp a barbell with an overhand grip slightly narrower than shoulder width, resting on your thighs, back straight. This is your starting position.","Exhale and lift the bar straight up your body, driving your elbows up and out until the bar nears your chin. Elbows stay above forearms.","Pause a second at the top, then lower slowly as you inhale.","Repeat for the prescribed reps."],
+  'treadmill-walk': ["Step onto the treadmill and pick a manual setting or program; adjust incline to change intensity.","Walk at a brisk (not leisurely) pace with upright posture for the prescribed time, holding the handles only when needed."],
+  'elliptical': ["Step onto the elliptical and select a manual setting or program; adjust resistance/elevation to set intensity.","Keep a steady, conversational pace for the prescribed time; use the handles to monitor heart rate if available."],
+  'glute-bridge': ["Lie on your back, knees bent, feet flat at shoulder width, arms by your sides. This is your starting position.","Push through your heels and lift your hips off the floor, keeping your back straight. Exhale and hold the top squeeze for a second.","Lower slowly back to the starting position as you inhale.","Repeat for the prescribed reps."],
+  'superman': ["Lie face down with your arms fully extended in front of you. This is your starting position.","Raise your arms, chest, and legs off the floor at the same time, exhaling and squeezing your lower back. Hold for 2 seconds.","Lower slowly back to the floor as you inhale.","Repeat for the prescribed reps."],
+  'preacher-curl': ["Sit at a preacher bench with an EZ bar, upper arms and chest against the pad, holding the bar at shoulder length. This is your starting position.","Inhale and lower the bar slowly until your arms are fully extended and the biceps fully stretched.","Exhale and curl the bar back up until fully contracted at shoulder height. Squeeze hard and hold a second.","Repeat for the prescribed reps."],
+  'good-morning': ["Rack a light bar across the rear of your shoulders (like a squat), back tight, knees slightly bent, and step back from the rack.","Bend at the hips, pushing them back as your torso lowers toward parallel, keeping your back arched and neck neutral. Inhale as you go.","Drive your hips forward using your glutes and hamstrings to return upright as you exhale.","Repeat for the prescribed reps."],
+  'cat-stretch': ["Get on the floor on your hands and knees.","Pull your belly in and round your spine, shoulders, and neck, letting your head drop.","Hold for the prescribed time, breathing slowly."],
+  'hamstring-calf-stretch': ["Loop a belt, band, or towel around one foot and place that foot forward while standing.","Bend your back leg, keep the front leg straight, lift the front toes off the ground, and lean forward.","Gently pull the top of the foot toward you to deepen the calf stretch. Hold for the prescribed time, then switch feet."],
+  'chest-shoulder-stretch': ["Stand with legs together holding a stick, band, or towel.","Take a wider-than-shoulder grip and hold it in front of you, palms down.","Slowly lift it up and over behind your head, keeping the arms straight. Hold for the prescribed time."],
+  'seated-triceps-press': ["Sit on a bench with back support holding one dumbbell overhead with both hands, palms on the underside of the top plate. This is your starting position.","Keeping your upper arms close to your head and elbows pointed up, lower the dumbbell in an arc behind your head until your forearms touch your biceps. Inhale as you lower.","Press back up to the starting position using your triceps as you exhale.","Repeat for the prescribed reps."],
+  'stationary-bike': ["Sit on the bike and adjust the seat to your height.","Pick a manual setting or program and pedal at a steady cadence for the prescribed time, adjusting resistance as needed."],
+  'reverse-crunch': ["Lie on the floor, legs extended, arms at your sides with palms down.","Bring your legs up so your thighs are vertical and feet together — this is your starting position.","Inhale and pull your knees toward your chest, rolling your pelvis back and lifting your hips off the floor.","Hold a second, then return your legs to the starting position as you exhale.","Repeat for the prescribed reps."],
+  'lying-leg-raise': ["Lie flat on a bench with your legs extended off the end, hands under your glutes or gripping the bench. This is your starting position.","Keeping your legs straight, raise them until they're at 90 degrees to the floor, exhaling and holding a second at the top.","Lower slowly back to the starting position as you inhale.","Repeat for the prescribed reps."],
+  'dumbbell-lunges': ["Stand upright with a dumbbell in each hand at your sides. This is your starting position.","Step forward about two feet and lower your body, keeping your torso upright and front shin vertical. Inhale as you descend.","Push through the front heel to return to the starting position as you exhale.","Repeat for the prescribed reps, then switch legs."],
+  'barbell-lunge': ["Set a bar in a rack just below shoulder height and rack it across the back of your shoulders, then step back.","Step forward with one leg and squat down through your hips, torso upright, knee behind the toes. Inhale as you descend.","Push through the front heel to return to the starting position as you exhale.","Repeat for the prescribed reps, then switch legs."]
 };
 
 let currentBodyType = 'ecto';
 
-const DAY_LABELS = {
+// PLANS[bodyType][daysPerWeek] = one entry per training day: chip (tab label),
+// label (section heading), color (day accent var), ex (exercise keys from the pool)
+const PLANS = {
   ecto: {
-    chest: { chip: 'Chest & Tris', section: 'Chest, Triceps & Abs · Day 1' },
-    legs: { chip: 'Legs', section: 'Legs & Glutes · Day 2' },
-    arms: { chip: 'Back & Arms', section: 'Back, Biceps & Shoulders · Day 4' },
-    full: { chip: 'Full Body', section: 'Full Body & Core · Day 5' }
+    4: [
+      { chip:'Chest & Tris', label:'Chest, Triceps & Abs', color:'chest', ex:['barbell-bench-press','incline-dumbbell-press','cable-chest-fly','close-grip-bench-press','tricep-pushdown','cable-crunch'] },
+      { chip:'Legs', label:'Legs & Glutes', color:'legs', ex:['barbell-back-squat','romanian-deadlift','leg-press','walking-lunges','standing-calf-raise'] },
+      { chip:'Back & Arms', label:'Back, Biceps & Shoulders', color:'arms', ex:['lat-pulldown','seated-cable-row','barbell-curl','incline-dumbbell-curl','overhead-press','lateral-raises','skull-crushers'] },
+      { chip:'Full Body', label:'Full Body & Core', color:'full', ex:['deadlift','pull-up','dips','farmers-carry','hanging-leg-raise','plank'] }
+    ],
+    5: [
+      { chip:'Chest', label:'Chest', color:'chest', ex:['barbell-bench-press','incline-dumbbell-press','dumbbell-flyes','cable-chest-fly','pushups'] },
+      { chip:'Back', label:'Back & Traps', color:'back', ex:['deadlift','lat-pulldown','seated-cable-row','one-arm-dumbbell-row','barbell-shrug'] },
+      { chip:'Legs', label:'Legs & Glutes', color:'legs', ex:['barbell-back-squat','romanian-deadlift','leg-press','barbell-lunge','standing-calf-raise'] },
+      { chip:'Delts & Arms', label:'Shoulders & Arms', color:'arms', ex:['overhead-press','lateral-raises','barbell-curl','preacher-curl','skull-crushers','tricep-pushdown'] },
+      { chip:'Full Body', label:'Full Body & Core', color:'full', ex:['pull-up','dips','farmers-carry','hanging-leg-raise','plank'] }
+    ],
+    6: [
+      { chip:'Push A', label:'Push A — Chest & Shoulders', color:'chest', ex:['barbell-bench-press','overhead-press','incline-dumbbell-press','tricep-pushdown','cable-crunch'] },
+      { chip:'Pull A', label:'Pull A — Back & Biceps', color:'back', ex:['deadlift','lat-pulldown','barbell-curl','face-pull','barbell-shrug'] },
+      { chip:'Legs A', label:'Legs A — Squat Focus', color:'legs', ex:['barbell-back-squat','romanian-deadlift','leg-press','standing-calf-raise'] },
+      { chip:'Push B', label:'Push B — Volume', color:'chest', ex:['incline-barbell-bench-press','dips','lateral-raises','skull-crushers','dumbbell-flyes'] },
+      { chip:'Pull B', label:'Pull B — Width & Arms', color:'back', ex:['pull-up','seated-cable-row','incline-dumbbell-curl','hammer-curl','upright-row'] },
+      { chip:'Legs B', label:'Legs B — Unilateral & Core', color:'legs', ex:['front-squat','barbell-lunge','lying-leg-curl','seated-calf-raise','hanging-leg-raise'] }
+    ],
+    7: [
+      { chip:'Push A', label:'Push A — Chest & Shoulders', color:'chest', ex:['barbell-bench-press','overhead-press','incline-dumbbell-press','tricep-pushdown','cable-crunch'] },
+      { chip:'Pull A', label:'Pull A — Back & Biceps', color:'back', ex:['deadlift','lat-pulldown','barbell-curl','face-pull','barbell-shrug'] },
+      { chip:'Legs A', label:'Legs A — Squat Focus', color:'legs', ex:['barbell-back-squat','romanian-deadlift','leg-press','standing-calf-raise'] },
+      { chip:'Push B', label:'Push B — Volume', color:'chest', ex:['incline-barbell-bench-press','dips','lateral-raises','skull-crushers','dumbbell-flyes'] },
+      { chip:'Pull B', label:'Pull B — Width & Arms', color:'back', ex:['pull-up','seated-cable-row','incline-dumbbell-curl','hammer-curl','upright-row'] },
+      { chip:'Legs B', label:'Legs B — Unilateral & Core', color:'legs', ex:['front-squat','barbell-lunge','lying-leg-curl','seated-calf-raise','hanging-leg-raise'] },
+      { chip:'Recovery', label:'Active Recovery & Mobility', color:'core', ex:['treadmill-walk','cat-stretch','hamstring-calf-stretch','chest-shoulder-stretch'] }
+    ]
   },
   meso: {
-    chest: { chip: 'Push', section: 'Push Day · Day 1' },
-    legs: { chip: 'Legs', section: 'Legs · Day 2' },
-    arms: { chip: 'Pull', section: 'Pull Day · Day 4' },
-    full: { chip: 'Conditioning', section: 'Conditioning & Core · Day 5' }
+    4: [
+      { chip:'Push', label:'Push Day', color:'chest', ex:['incline-barbell-bench-press','seated-dumbbell-press','decline-bench-press','seated-lateral-raise','bench-dips'] },
+      { chip:'Legs', label:'Legs', color:'legs', ex:['front-squat','leg-extension','lying-leg-curl','dumbbell-split-squat','seated-calf-raise'] },
+      { chip:'Pull', label:'Pull Day', color:'arms', ex:['bent-over-row','one-arm-dumbbell-row','face-pull','hammer-curl','concentration-curl'] },
+      { chip:'Conditioning', label:'Conditioning & Core', color:'full', ex:['kettlebell-dead-clean','box-jump','russian-twist','mountain-climbers'] }
+    ],
+    5: [
+      { chip:'Push', label:'Push Day', color:'chest', ex:['incline-barbell-bench-press','seated-dumbbell-press','decline-bench-press','seated-lateral-raise','bench-dips'] },
+      { chip:'Pull', label:'Pull Day', color:'back', ex:['bent-over-row','one-arm-dumbbell-row','face-pull','hammer-curl','concentration-curl'] },
+      { chip:'Legs', label:'Legs', color:'legs', ex:['front-squat','leg-extension','lying-leg-curl','dumbbell-split-squat','seated-calf-raise'] },
+      { chip:'Power Upper', label:'Power Upper Body', color:'arms', ex:['arnold-press','upright-row','barbell-shrug','close-grip-bench-press','preacher-curl'] },
+      { chip:'Conditioning', label:'Conditioning & Core', color:'full', ex:['kettlebell-dead-clean','box-jump','russian-twist','mountain-climbers','reverse-crunch'] }
+    ],
+    6: [
+      { chip:'Push A', label:'Push A', color:'chest', ex:['incline-barbell-bench-press','seated-dumbbell-press','bench-dips','seated-lateral-raise'] },
+      { chip:'Pull A', label:'Pull A', color:'back', ex:['bent-over-row','face-pull','hammer-curl','barbell-shrug'] },
+      { chip:'Legs A', label:'Legs A', color:'legs', ex:['front-squat','lying-leg-curl','leg-extension','seated-calf-raise'] },
+      { chip:'Push B', label:'Push B', color:'chest', ex:['decline-bench-press','arnold-press','dumbbell-flyes','seated-triceps-press'] },
+      { chip:'Pull B', label:'Pull B', color:'back', ex:['one-arm-dumbbell-row','upright-row','preacher-curl','concentration-curl'] },
+      { chip:'Legs & Core', label:'Legs B & Core', color:'legs', ex:['dumbbell-split-squat','dumbbell-lunges','good-morning','russian-twist','reverse-crunch'] }
+    ],
+    7: [
+      { chip:'Push A', label:'Push A', color:'chest', ex:['incline-barbell-bench-press','seated-dumbbell-press','bench-dips','seated-lateral-raise'] },
+      { chip:'Pull A', label:'Pull A', color:'back', ex:['bent-over-row','face-pull','hammer-curl','barbell-shrug'] },
+      { chip:'Legs A', label:'Legs A', color:'legs', ex:['front-squat','lying-leg-curl','leg-extension','seated-calf-raise'] },
+      { chip:'Push B', label:'Push B', color:'chest', ex:['decline-bench-press','arnold-press','dumbbell-flyes','seated-triceps-press'] },
+      { chip:'Pull B', label:'Pull B', color:'back', ex:['one-arm-dumbbell-row','upright-row','preacher-curl','concentration-curl'] },
+      { chip:'Legs & Core', label:'Legs B & Core', color:'legs', ex:['dumbbell-split-squat','dumbbell-lunges','good-morning','russian-twist','reverse-crunch'] },
+      { chip:'Recovery', label:'Active Recovery & Mobility', color:'core', ex:['stationary-bike','cat-stretch','hamstring-calf-stretch','chest-shoulder-stretch'] }
+    ]
   },
   endo: {
-    chest: { chip: 'Upper', section: 'Upper Body · Day 1' },
-    legs: { chip: 'Lower+Cardio', section: 'Lower Body & Cardio · Day 2' },
-    arms: { chip: 'Full Circuit', section: 'Full-Body Circuit · Day 4' },
-    full: { chip: 'Core & Cardio', section: 'Core & Conditioning · Day 5' }
+    4: [
+      { chip:'Upper', label:'Upper Body', color:'chest', ex:['pushups','dumbbell-row','dumbbell-shoulder-press','tricep-kickback','dumbbell-bicep-curl'] },
+      { chip:'Lower+Cardio', label:'Lower Body & Cardio', color:'legs', ex:['goblet-squat','dumbbell-rdl','dumbbell-step-ups','standing-dumbbell-calf-raise','rope-jumping'] },
+      { chip:'Full Circuit', label:'Full-Body Circuit', color:'arms', ex:['kettlebell-thruster','renegade-row','stationary-rowing','air-bike'] },
+      { chip:'Core & Cardio', label:'Core & Conditioning', color:'full', ex:['plank-endo','crunches','side-plank-pushup','treadmill-jog'] }
+    ],
+    5: [
+      { chip:'Upper', label:'Upper Body', color:'chest', ex:['pushups','dumbbell-row','dumbbell-shoulder-press','tricep-kickback','dumbbell-bicep-curl'] },
+      { chip:'Lower+Cardio', label:'Lower Body & Cardio', color:'legs', ex:['goblet-squat','dumbbell-rdl','dumbbell-step-ups','standing-dumbbell-calf-raise','rope-jumping'] },
+      { chip:'Full Circuit', label:'Full-Body Circuit', color:'back', ex:['kettlebell-thruster','renegade-row','stationary-rowing','air-bike'] },
+      { chip:'Dumbbell Full', label:'Full-Body Dumbbell', color:'full', ex:['dumbbell-lunges','glute-bridge','dumbbell-flyes','one-arm-dumbbell-row','elliptical'] },
+      { chip:'Core & Cardio', label:'Core & Conditioning', color:'core', ex:['plank-endo','crunches','side-plank-pushup','reverse-crunch','treadmill-jog'] }
+    ],
+    6: [
+      { chip:'Upper A', label:'Upper A', color:'chest', ex:['pushups','dumbbell-row','dumbbell-shoulder-press','tricep-kickback'] },
+      { chip:'Lower A', label:'Lower A', color:'legs', ex:['goblet-squat','dumbbell-rdl','standing-dumbbell-calf-raise','glute-bridge'] },
+      { chip:'Circuit', label:'Full-Body Circuit', color:'back', ex:['kettlebell-thruster','renegade-row','stationary-rowing','air-bike'] },
+      { chip:'Upper B', label:'Upper B', color:'arms', ex:['dumbbell-flyes','one-arm-dumbbell-row','arnold-press','dumbbell-bicep-curl'] },
+      { chip:'Lower B', label:'Lower B & Back', color:'full', ex:['dumbbell-lunges','dumbbell-step-ups','superman','lying-leg-raise'] },
+      { chip:'Cardio & Core', label:'Cardio & Core', color:'core', ex:['treadmill-jog','plank-endo','crunches','reverse-crunch'] }
+    ],
+    7: [
+      { chip:'Upper A', label:'Upper A', color:'chest', ex:['pushups','dumbbell-row','dumbbell-shoulder-press','tricep-kickback'] },
+      { chip:'Lower A', label:'Lower A', color:'legs', ex:['goblet-squat','dumbbell-rdl','standing-dumbbell-calf-raise','glute-bridge'] },
+      { chip:'Circuit', label:'Full-Body Circuit', color:'back', ex:['kettlebell-thruster','renegade-row','stationary-rowing','air-bike'] },
+      { chip:'Upper B', label:'Upper B', color:'arms', ex:['dumbbell-flyes','one-arm-dumbbell-row','arnold-press','dumbbell-bicep-curl'] },
+      { chip:'Lower B', label:'Lower B & Back', color:'full', ex:['dumbbell-lunges','dumbbell-step-ups','superman','lying-leg-raise'] },
+      { chip:'Cardio & Core', label:'Cardio & Core', color:'core', ex:['treadmill-jog','plank-endo','crunches','reverse-crunch'] },
+      { chip:'Recovery', label:'Recovery Walk & Mobility', color:'core', ex:['treadmill-walk','elliptical','cat-stretch','hamstring-calf-stretch'] }
+    ]
   }
 };
+
+function getDaysPerWeek() {
+  const p = getProfile();
+  return (p && [4,5,6,7].includes(p.daysPerWeek)) ? p.daysPerWeek : 4;
+}
+function currentPlan() { return PLANS[currentBodyType][getDaysPerWeek()]; }
 
 const BODY_GUIDES = {
   ecto: {
@@ -968,26 +1050,21 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-// ---- onboarding + body type ----
+// ---- onboarding + body type + plan length ----
 let pendingBodyType = null;
+let pendingDays = null;
 const BODY_TYPE_NAMES = { ecto: 'Ectomorph', meso: 'Mesomorph', endo: 'Endomorph' };
 
 function selectBodyTypeCard(bt) {
   pendingBodyType = bt;
   document.querySelectorAll('.bodytype-card').forEach(c => c.classList.toggle('selected', c.dataset.bt === bt));
-  const overlay = document.getElementById('onboard-overlay');
-  if (overlay.dataset.mode === 'switch') {
-    const profile = getProfile() || {};
-    profile.bodyType = bt;
-    saveProfile(profile);
-    overlay.hidden = true;
-    overlay.dataset.mode = '';
-    document.querySelector('.onboard-form').style.display = '';
-    document.getElementById('onboard-title').textContent = 'Welcome to One more Kilo!';
-    applyBodyType(bt);
-  } else {
-    checkOnboardReady();
-  }
+  checkOnboardReady();
+}
+
+function selectDaysCard(n) {
+  pendingDays = n;
+  document.querySelectorAll('#onboard-days button').forEach(b => b.classList.toggle('active', parseInt(b.dataset.days, 10) === n));
+  checkOnboardReady();
 }
 
 function checkOnboardReady() {
@@ -995,29 +1072,49 @@ function checkOnboardReady() {
   const w = document.getElementById('onboard-weight');
   const btn = document.getElementById('onboard-submit');
   if (!btn) return;
-  btn.disabled = !(pendingBodyType && h.value && w.value);
+  const isSwitch = document.getElementById('onboard-overlay').dataset.mode === 'switch';
+  btn.disabled = isSwitch ? !(pendingBodyType && pendingDays) : !(pendingBodyType && pendingDays && h.value && w.value);
 }
 
 function completeOnboarding() {
+  const overlay = document.getElementById('onboard-overlay');
+  if (overlay.dataset.mode === 'switch') {
+    if (!pendingBodyType || !pendingDays) return;
+    const profile = getProfile() || {};
+    profile.bodyType = pendingBodyType;
+    profile.daysPerWeek = pendingDays;
+    saveProfile(profile);
+    overlay.hidden = true;
+    overlay.dataset.mode = '';
+    document.getElementById('onboard-hw').style.display = '';
+    document.getElementById('onboard-title').textContent = 'Welcome to One more Kilo!';
+    document.getElementById('onboard-submit').textContent = 'Get started';
+    applyBodyType(pendingBodyType);
+    return;
+  }
   const h = parseFloat(document.getElementById('onboard-height').value);
   const w = parseFloat(document.getElementById('onboard-weight').value);
-  if (!pendingBodyType || !h || !w) return;
-  saveProfile({ bodyType: pendingBodyType, heightCm: h });
+  if (!pendingBodyType || !pendingDays || !h || !w) return;
+  saveProfile({ bodyType: pendingBodyType, daysPerWeek: pendingDays, heightCm: h });
   const log = getWeightLog();
   log.push({ date: todayISO(), weight: w });
   saveWeightLog(log);
-  document.getElementById('onboard-overlay').hidden = true;
+  overlay.hidden = true;
   applyBodyType(pendingBodyType);
 }
 
 function openBodyTypePicker() {
   pendingBodyType = currentBodyType;
+  pendingDays = getDaysPerWeek();
   const overlay = document.getElementById('onboard-overlay');
-  document.getElementById('onboard-title').textContent = 'Switch body type';
+  document.getElementById('onboard-title').textContent = 'Switch plan';
   document.querySelectorAll('.bodytype-card').forEach(c => c.classList.toggle('selected', c.dataset.bt === currentBodyType));
-  document.querySelector('.onboard-form').style.display = 'none';
+  document.querySelectorAll('#onboard-days button').forEach(b => b.classList.toggle('active', parseInt(b.dataset.days, 10) === pendingDays));
+  document.getElementById('onboard-hw').style.display = 'none';
+  document.getElementById('onboard-submit').textContent = 'Save changes';
   overlay.dataset.mode = 'switch';
   overlay.hidden = false;
+  checkOnboardReady();
 }
 
 function applyBodyType(bt) {
@@ -1027,7 +1124,7 @@ function applyBodyType(bt) {
   const whyEl = document.getElementById('muscle-why-body');
   if (whyEl) whyEl.textContent = BODY_GUIDES[bt].muscleWhy;
   renderBodyGuide();
-  renderAllDays();
+  renderPlan();
   renderAllWeekChecks();
   loadVisibleImages();
   populateMilestoneDropdown();
@@ -1042,8 +1139,10 @@ function updateProfileLabels() {
   const btLabel = document.getElementById('profile-bodytype-label');
   const hLabel = document.getElementById('profile-height-label');
   const wLabel = document.getElementById('profile-weight-label');
+  const dLabel = document.getElementById('profile-days-label');
   if (btLabel) btLabel.textContent = BODY_TYPE_NAMES[profile.bodyType] || profile.bodyType;
   if (hLabel) hLabel.textContent = profile.heightCm;
+  if (dLabel) dLabel.textContent = getDaysPerWeek();
   if (wLabel) {
     const log = sortedWeightLog();
     wLabel.textContent = log.length ? `${log[0].weight} kg (${formatDateShort(log[0].date)})` : '—';
@@ -1166,6 +1265,16 @@ function updateDayProgress(dayId) {
 // ---- weekly day-completion checkbox (7-day rolling reset) ----
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 function getDayDone() { try { return JSON.parse(localStorage.getItem('wk_daydone')) || {}; } catch (e) { return {}; } }
+// One-time migration: pre-plan versions keyed weekly checkboxes by slot name instead of day number
+function migrateDayDone() {
+  const d = getDayDone();
+  const map = { chest: 'd1', legs: 'd2', arms: 'd3', full: 'd4' };
+  let changed = false;
+  Object.keys(map).forEach(oldKey => {
+    if (d[oldKey]) { d[map[oldKey]] = d[map[oldKey]] || d[oldKey]; delete d[oldKey]; changed = true; }
+  });
+  if (changed) localStorage.setItem('wk_daydone', JSON.stringify(d));
+}
 function saveDayDone(obj) { localStorage.setItem('wk_daydone', JSON.stringify(obj)); syncToCloud(); }
 
 function isDayDoneThisWeek(slot) {
@@ -1201,7 +1310,7 @@ function renderWeekCheck(slot) {
 }
 
 function renderAllWeekChecks() {
-  ['chest', 'legs', 'arms', 'full'].forEach(renderWeekCheck);
+  planDayIds().forEach(renderWeekCheck);
   renderWeekProgress();
 }
 
@@ -1209,9 +1318,10 @@ function renderWeekProgress() {
   const countEl = document.getElementById('week-progress-count');
   const fillEl = document.getElementById('week-progress-fill');
   if (!countEl || !fillEl) return;
-  const done = ['chest', 'legs', 'arms', 'full'].filter(isDayDoneThisWeek).length;
-  countEl.textContent = `${done}/4 days`;
-  fillEl.style.width = (done / 4 * 100) + '%';
+  const ids = planDayIds();
+  const done = ids.filter(isDayDoneThisWeek).length;
+  countEl.textContent = `${done}/${ids.length} days`;
+  fillEl.style.width = (done / ids.length * 100) + '%';
 }
 
 // ---- set logging ----
@@ -1341,7 +1451,8 @@ function bestWeight(key) {
 function populateMilestoneDropdown() {
   const sel = document.getElementById('ms-exercise');
   if (!sel) return;
-  sel.innerHTML = EXERCISES.filter(ex => ex.bodyType === currentBodyType).map(ex => `<option value="${ex.key}">${ex.name}</option>`).join('');
+  const keys = [...new Set(currentPlan().flatMap(day => day.ex))];
+  sel.innerHTML = keys.map(k => EXERCISES.find(e => e.key === k)).filter(Boolean).map(ex => `<option value="${ex.key}">${ex.name}</option>`).join('');
 }
 function addMilestone() {
   const sel = document.getElementById('ms-exercise');
@@ -1440,18 +1551,34 @@ function renderCard(ex) {
   </div>`;
 }
 
-function renderAllDays() {
-  ['chest', 'legs', 'arms', 'full'].forEach(day => {
-    const container = document.querySelector(`[data-day-list="${day}"]`);
-    if (!container) return;
-    container.innerHTML = EXERCISES.filter(e => e.day === day && e.bodyType === currentBodyType).map(renderCard).join('');
-    updateDayProgress(day);
-    const labels = DAY_LABELS[currentBodyType][day];
-    const chipEl = document.getElementById('day-name-' + day);
-    const sectionEl = document.getElementById('section-label-' + day);
-    if (chipEl && labels) chipEl.textContent = labels.chip;
-    if (sectionEl && labels) sectionEl.textContent = labels.section;
-  });
+function planDayIds() { return currentPlan().map((_, i) => 'd' + (i + 1)); }
+
+function renderPlan() {
+  const plan = currentPlan();
+  const chipsEl = document.getElementById('day-scroll');
+  const sectionsEl = document.getElementById('day-sections');
+  if (!chipsEl || !sectionsEl) return;
+
+  chipsEl.innerHTML = plan.map((day, i) => {
+    const id = 'd' + (i + 1);
+    return `<div class="day-chip ${i === 0 ? 'active' : ''}" style="--active-color:var(--${day.color})" onclick="showDay('${id}',this)"><div class="day-num">Day ${i + 1}</div><div class="day-name">${day.chip}</div><div class="day-dot"></div></div>`;
+  }).join('') + (plan.length < 7 ? `<div class="day-chip rest-chip"><div class="day-num">Day ${plan.length + 1}–7</div><div class="day-name">Rest</div><div class="day-dot" style="background:var(--muted)"></div></div>` : '');
+
+  sectionsEl.innerHTML = plan.map((day, i) => {
+    const id = 'd' + (i + 1);
+    const cards = day.ex.map(k => EXERCISES.find(e => e.key === k)).filter(Boolean).map(renderCard).join('');
+    return `<div id="ex-${id}" ${i === 0 ? '' : 'style="display:none"'}>
+      <div class="ex-section-label">${day.label} · Day ${i + 1}</div>
+      <div class="week-check" id="week-check-wrap-${id}" onclick="toggleDayDone('${id}')">
+        <div class="week-check-box" id="week-check-${id}"></div>
+        <div><div class="week-check-title">This week's session</div><div class="week-check-sub" id="week-check-sub-${id}"></div></div>
+      </div>
+      <div class="day-progress" data-day-progress="${id}"></div>
+      <div class="ex-card-list" data-day-list="${id}">${cards}</div>
+    </div>`;
+  }).join('');
+
+  planDayIds().forEach(updateDayProgress);
   EXERCISES.forEach(ex => updateLastLogged(ex.key));
 }
 
@@ -1467,7 +1594,7 @@ function showTab(name, el) {
 function showDay(day, el) {
   document.querySelectorAll('.day-chip:not(.rest-chip)').forEach(c => c.classList.remove('active'));
   if (el) el.classList.add('active');
-  ['chest','legs','arms','full','rest'].forEach(id => {
+  planDayIds().forEach(id => {
     const e = document.getElementById('ex-' + id);
     if (e) e.style.display = 'none';
   });
@@ -1477,6 +1604,7 @@ function showDay(day, el) {
 
 window.addEventListener('load', () => {
   applyTheme();
+  migrateDayDone();
   document.getElementById('onboard-height').addEventListener('input', checkOnboardReady);
   document.getElementById('onboard-weight').addEventListener('input', checkOnboardReady);
   const profile = getProfile();
