@@ -6,15 +6,33 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="One more Kilo!"/>
-<meta name="theme-color" content="#0f0f0f"/>
+<meta name="theme-color" content="#0f0f0f" id="meta-theme-color"/>
 <title>One more Kilo!</title>
+<script>
+// Runs before CSS paints so there's no flash of the wrong theme
+(function () {
+  var mode = localStorage.getItem('wk_thememode') || 'auto';
+  var accent = localStorage.getItem('wk_accent') || 'green';
+  var effective = mode === 'auto' ? ((window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark') : mode;
+  document.documentElement.setAttribute('data-theme', effective);
+  document.documentElement.setAttribute('data-accent', accent);
+})();
+</script>
 <style>
 :root {
   --bg: #0f0f0f; --surface: #1a1a1a; --card: #222; --border: rgba(255,255,255,0.08);
-  --text: #f0ede8; --muted: #888780;
+  --text: #f0ede8; --muted: #888780; --nav-bg: rgba(15,15,15,.92); --img-bg: #181818;
   --chest: #e87a50; --arms: #4a8fd4; --legs: #5db87a; --full: #9b7fe8; --back: #4fc3c9; --core: #e8b34a;
   --safe-top: env(safe-area-inset-top,0px); --safe-bottom: env(safe-area-inset-bottom,0px);
+  --primary: #34d399; --on-primary: #06281c;
 }
+html[data-theme="light"] {
+  --bg: #f5f4f1; --surface: #ffffff; --card: #ffffff; --border: rgba(0,0,0,.09);
+  --text: #17160f; --muted: #6b6a66; --nav-bg: rgba(255,255,255,.92); --img-bg: #ececea;
+}
+html[data-accent="contrast"] { --primary: #ffffff; --on-primary: #0f0f0f; }
+html[data-theme="light"][data-accent="contrast"] { --primary: #0f0f0f; --on-primary: #ffffff; }
+html[data-theme="light"][data-accent="green"] { --primary: #059669; --on-primary: #ffffff; }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;overscroll-behavior:none}
 .app{display:flex;flex-direction:column;height:100vh;height:100dvh}
@@ -25,9 +43,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .header-account-btn{background:var(--surface);border:.5px solid var(--border);color:var(--text);font-size:11.5px;font-weight:600;padding:7px 12px;border-radius:20px;cursor:pointer}
 .header-account-email{font-size:10.5px;color:var(--muted);margin-bottom:4px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--safe-bottom) + 72px)}
-.nav{position:fixed;bottom:0;left:0;right:0;padding-bottom:var(--safe-bottom);background:rgba(15,15,15,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:.5px solid var(--border);display:flex;z-index:100}
+.nav{position:fixed;bottom:0;left:0;right:0;padding-bottom:var(--safe-bottom);background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:.5px solid var(--border);display:flex;z-index:100}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0;font-size:10px;color:var(--muted);cursor:pointer;border:none;background:none}
-.nav-item.active{color:var(--text)}
+.nav-item.active{color:var(--primary)}
 .nav-icon{font-size:22px;line-height:1}
 .section{display:none;padding:16px}
 .section.active{display:block}
@@ -41,7 +59,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .day-dot{width:6px;height:6px;border-radius:50%;margin-top:6px;background:var(--active-color,var(--muted))}
 .ex-section-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
 .ex-card{background:var(--card);border:.5px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:14px}
-.ex-img-wrap{width:100%;height:180px;background:#181818;display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:.5px solid var(--border);position:relative}
+.ex-img-wrap{width:100%;height:180px;background:var(--img-bg);display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:.5px solid var(--border);position:relative}
 .ex-img-wrap img{width:100%;height:100%;object-fit:contain;padding:8px}
 .ex-img-wrap .img-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--muted)}
 .ex-img-wrap .img-error{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--muted)}
@@ -77,7 +95,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .badge-sh{background:rgba(93,184,122,.1);color:#5db87a}
 .badge-back{background:rgba(79,195,201,.15);color:var(--back)}
 .badge-core{background:rgba(232,179,74,.15);color:var(--core)}
-.img-credit{position:absolute;bottom:4px;right:6px;font-size:9px;color:rgba(255,255,255,.25)}
+.img-credit{position:absolute;bottom:4px;right:6px;font-size:9px;color:var(--muted);opacity:.6}
 .ex-top-right{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:8px}
 .ex-check{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border);background:none;color:var(--muted);font-size:13px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:0}
 .ex-check.done{background:#5db87a;border-color:#5db87a;color:#0f0f0f}
@@ -96,12 +114,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .timer-adjust button{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:4px 8px}
 .timer-controls{display:flex;gap:8px}
 .timer-controls button{flex:1;padding:9px;border-radius:8px;border:none;background:var(--card);color:var(--text);font-size:12.5px;font-weight:600;cursor:pointer}
-.timer-controls button.primary{background:var(--arms);color:#fff}
+.timer-controls button.primary{background:var(--primary);color:var(--on-primary)}
 .timer-panel.flash{animation:flashbg .5s ease 4}
 @keyframes flashbg{0%,100%{background:var(--surface)}50%{background:rgba(93,184,122,.35)}}
 .log-form{display:flex;gap:8px;margin-bottom:8px}
 .log-form input{flex:1;min-width:0;background:var(--card);border:.5px solid var(--border);border-radius:8px;padding:9px 8px;color:var(--text);font-size:13px}
-.log-form button{padding:9px 14px;border-radius:8px;border:none;background:var(--arms);color:#fff;font-weight:600;font-size:12.5px;flex-shrink:0}
+.log-form button{padding:9px 14px;border-radius:8px;border:none;background:var(--primary);color:var(--on-primary);font-weight:600;font-size:12.5px;flex-shrink:0}
 .day-progress{font-size:12px;color:var(--muted);margin-bottom:12px}
 .step-arrow{position:absolute;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;border:none;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2}
 .step-arrow.prev{left:6px}.step-arrow.next{right:6px}
@@ -116,7 +134,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .add-milestone-form{background:var(--card);border:.5px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:16px}
 .add-milestone-form label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}
 .add-milestone-form select,.add-milestone-form input{width:100%;background:var(--surface);border:.5px solid var(--border);border-radius:8px;padding:9px;color:var(--text);font-size:13px;margin-bottom:10px}
-.add-milestone-form button{width:100%;padding:10px;border-radius:8px;border:none;background:var(--full);color:#fff;font-weight:600;font-size:13px}
+.add-milestone-form button{width:100%;padding:10px;border-radius:8px;border:none;background:var(--primary);color:var(--on-primary);font-weight:600;font-size:13px}
 .activity-item{display:flex;justify-content:space-between;font-size:12.5px;padding:9px 0;border-top:.5px solid var(--border)}
 .activity-item:first-child{border-top:none}
 .activity-item span:last-child{color:var(--muted)}
@@ -125,16 +143,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .onboard-title{font-size:24px;font-weight:700;margin-bottom:6px;letter-spacing:-.4px}
 .onboard-sub{font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.5}
 .bodytype-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px;cursor:pointer}
-.bodytype-card.selected{border-color:var(--arms);background:rgba(74,143,212,.08)}
+.bodytype-card.selected{border-color:var(--primary);background:var(--surface)}
 .bodytype-card .bt-title{font-size:15px;font-weight:700;margin-bottom:4px}
 .bodytype-card .bt-body{font-size:12.5px;color:var(--muted);line-height:1.5}
 .onboard-form{margin-top:20px}
 .onboard-form label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}
 .onboard-form input{width:100%;background:var(--surface);border:.5px solid var(--border);border-radius:8px;padding:11px;color:var(--text);font-size:14px;margin-bottom:14px}
-.onboard-form button{width:100%;padding:14px;border-radius:10px;border:none;background:var(--arms);color:#fff;font-weight:700;font-size:15px;margin-top:6px}
+.onboard-form button{width:100%;padding:14px;border-radius:10px;border:none;background:var(--primary);color:var(--on-primary);font-weight:700;font-size:15px;margin-top:6px}
 .onboard-form button:disabled{opacity:.4}
 .auth-input{width:100%;background:var(--surface);border:.5px solid var(--border);border-radius:8px;padding:9px;color:var(--text);font-size:13px;margin-bottom:8px}
-.link-btn{background:none;border:none;color:var(--arms);font-size:13px;cursor:pointer;padding:8px 0;text-align:center;width:100%}
+.link-btn{background:none;border:none;color:var(--primary);font-size:13px;cursor:pointer;padding:8px 0;text-align:center;width:100%}
 .link-btn.muted{color:var(--muted);font-size:12px}
 .bmi-row{display:flex;align-items:center;gap:10px;margin-top:10px}
 .bmi-value{font-size:24px;font-weight:700}
@@ -145,6 +163,18 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .week-check.done .week-check-box{background:#5db87a;border-color:#5db87a;color:#0f0f0f}
 .week-check-title{font-size:14px;font-weight:600}
 .week-check-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.seg-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:12px 0 6px}
+.seg{display:flex;background:var(--surface);border:.5px solid var(--border);border-radius:10px;padding:3px;gap:3px}
+.seg button{flex:1;padding:8px 4px;border-radius:8px;border:none;background:none;color:var(--muted);font-size:12.5px;font-weight:600;cursor:pointer}
+.seg button.active{background:var(--primary);color:var(--on-primary)}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:pan-y}
+.lightbox img{max-width:100%;max-height:78vh;object-fit:contain}
+.lightbox-close{position:absolute;top:calc(var(--safe-top) + 14px);right:16px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;border:none;font-size:18px;cursor:pointer;z-index:2}
+.lightbox-caption{color:#fff;font-size:14px;font-weight:600;margin-top:14px;text-align:center;padding:0 20px}
+.lightbox-hint{color:rgba(255,255,255,.55);font-size:12px;margin-top:6px}
+.lightbox-dots{display:flex;gap:6px;margin-top:12px}
+.lightbox-dots .step-dot{width:8px;height:8px}
+.lightbox .step-arrow{width:36px;height:36px;font-size:18px}
 </style>
 </head>
 <body>
@@ -182,6 +212,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
     <button type="button" class="link-btn muted" id="login-skip" onclick="skipLogin()">Continue without an account</button>
   </form>
 </div>
+<div class="lightbox" id="lightbox" hidden onclick="lightboxBackdropClick(event)">
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close">✕</button>
+  <button class="step-arrow prev" onclick="lightboxFlip(-1);event.stopPropagation()" aria-label="Previous step">‹</button>
+  <button class="step-arrow next" onclick="lightboxFlip(1);event.stopPropagation()" aria-label="Next step">›</button>
+  <img id="lightbox-img" alt=""/>
+  <div class="lightbox-caption" id="lightbox-caption"></div>
+  <div class="lightbox-hint">Swipe or tap arrows to switch step · tap outside to close</div>
+  <div class="lightbox-dots"><span class="step-dot active" id="lightbox-dot-0"></span><span class="step-dot" id="lightbox-dot-1"></span></div>
+</div>
 <div class="app">
   <div class="header">
     <div><h1>One more Kilo!</h1><div class="header-sub" id="header-sub">Ectomorph mass builder</div></div>
@@ -194,7 +233,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
     <div id="tab-weekly" class="section active">
       <div class="info-card" style="margin-bottom:16px">
         <div class="progress-label"><span>This week's training</span><span id="week-progress-count">0/4 days</span></div>
-        <div class="prog-track"><div class="prog-fill" id="week-progress-fill" style="width:0%;background:var(--arms)"></div></div>
+        <div class="prog-track"><div class="prog-fill" id="week-progress-fill" style="width:0%;background:var(--primary)"></div></div>
       </div>
       <div class="day-scroll">
         <div class="day-chip active" style="--active-color:var(--chest)" onclick="showDay('chest',this)"><div class="day-num">Day 1</div><div class="day-name" id="day-name-chest">Chest & Tris</div><div class="day-dot"></div></div>
@@ -323,6 +362,21 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
           <div class="info-title">Signed in as <span id="account-email"></span></div>
           <div class="info-body" id="sync-status">Synced</div>
           <div class="ex-actions" style="margin-top:10px"><button class="ex-action-btn" onclick="logOut()">Log out</button></div>
+        </div>
+      </div>
+
+      <div class="section-heading" style="margin-top:8px">Appearance</div>
+      <div class="info-card">
+        <div class="seg-label" style="margin-top:0">Color mode</div>
+        <div class="seg" id="seg-mode">
+          <button data-mode="light" onclick="setThemeMode('light')">Light</button>
+          <button data-mode="dark" onclick="setThemeMode('dark')">Dark</button>
+          <button data-mode="auto" onclick="setThemeMode('auto')">Auto</button>
+        </div>
+        <div class="seg-label">Accent</div>
+        <div class="seg" id="seg-accent">
+          <button data-accent="green" onclick="setAccent('green')">Green</button>
+          <button data-accent="contrast" onclick="setAccent('contrast')">Contrast</button>
         </div>
       </div>
 
@@ -638,6 +692,8 @@ function renderImgInWrap(wrap, path, alt) {
   const img = document.createElement('img');
   img.src = IMAGE_BASE + path;
   img.alt = alt;
+  img.style.cursor = 'zoom-in';
+  img.onclick = () => openLightbox(wrap.dataset.imgBase, parseInt(wrap.dataset.step || '0', 10), alt);
   img.onload = () => {
     slot.innerHTML = '';
     slot.appendChild(img);
@@ -646,6 +702,59 @@ function renderImgInWrap(wrap, path, alt) {
   };
   img.onerror = () => { slot.innerHTML = `<div class="img-error"><span style="font-size:28px">🏋️</span><span>${alt}</span></div>`; };
 }
+
+// ---- fullscreen image lightbox ----
+const LIGHTBOX = { base: null, step: 0, alt: '' };
+function openLightbox(base, step, alt) {
+  LIGHTBOX.base = base; LIGHTBOX.step = step; LIGHTBOX.alt = alt;
+  renderLightbox();
+  document.getElementById('lightbox').hidden = false;
+}
+function renderLightbox() {
+  const img = document.getElementById('lightbox-img');
+  img.src = IMAGE_BASE + imgPathForStep(LIGHTBOX.base, String(LIGHTBOX.step));
+  img.alt = LIGHTBOX.alt;
+  document.getElementById('lightbox-caption').textContent = `${LIGHTBOX.alt} — Step ${LIGHTBOX.step + 1} of 2`;
+  document.getElementById('lightbox-dot-0').classList.toggle('active', LIGHTBOX.step === 0);
+  document.getElementById('lightbox-dot-1').classList.toggle('active', LIGHTBOX.step === 1);
+}
+function lightboxFlip(dir) {
+  LIGHTBOX.step = (LIGHTBOX.step + dir + 2) % 2;
+  renderLightbox();
+}
+function closeLightbox() { document.getElementById('lightbox').hidden = true; }
+function lightboxBackdropClick(e) { if (e.target.id === 'lightbox') closeLightbox(); }
+
+let touchStartX = null;
+document.addEventListener('touchstart', e => {
+  if (document.getElementById('lightbox').hidden) return;
+  touchStartX = e.touches[0].clientX;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  if (document.getElementById('lightbox').hidden || touchStartX === null) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  touchStartX = null;
+  if (Math.abs(dx) > 40) lightboxFlip(dx < 0 ? 1 : -1);
+}, { passive: true });
+
+// ---- theme (light/dark/auto + accent) ----
+function getThemeMode() { return localStorage.getItem('wk_thememode') || 'auto'; }
+function getAccent() { return localStorage.getItem('wk_accent') || 'green'; }
+function setThemeMode(mode) { localStorage.setItem('wk_thememode', mode); applyTheme(); }
+function setAccent(accent) { localStorage.setItem('wk_accent', accent); applyTheme(); }
+function applyTheme() {
+  const mode = getThemeMode();
+  const effective = mode === 'auto' ? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark') : mode;
+  document.documentElement.setAttribute('data-theme', effective);
+  document.documentElement.setAttribute('data-accent', getAccent());
+  const meta = document.getElementById('meta-theme-color');
+  if (meta) meta.content = effective === 'light' ? '#f5f4f1' : '#0f0f0f';
+  const segMode = document.getElementById('seg-mode');
+  if (segMode) segMode.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  const segAccent = document.getElementById('seg-accent');
+  if (segAccent) segAccent.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.accent === getAccent()));
+}
+window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => { if (getThemeMode() === 'auto') applyTheme(); });
 
 function loadCardImage(card) {
   const wrap = card.querySelector('.ex-img-wrap');
@@ -1349,6 +1458,7 @@ function showDay(day, el) {
 }
 
 window.addEventListener('load', () => {
+  applyTheme();
   document.getElementById('onboard-height').addEventListener('input', checkOnboardReady);
   document.getElementById('onboard-weight').addEventListener('input', checkOnboardReady);
   const profile = getProfile();
