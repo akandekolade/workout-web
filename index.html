@@ -130,6 +130,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .onboard-form input{width:100%;background:var(--surface);border:.5px solid var(--border);border-radius:8px;padding:11px;color:var(--text);font-size:14px;margin-bottom:14px}
 .onboard-form button{width:100%;padding:14px;border-radius:10px;border:none;background:var(--arms);color:#fff;font-weight:700;font-size:15px;margin-top:6px}
 .onboard-form button:disabled{opacity:.4}
+.auth-input{width:100%;background:var(--surface);border:.5px solid var(--border);border-radius:8px;padding:9px;color:var(--text);font-size:13px;margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -257,7 +258,26 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
     </div>
 
     <div id="tab-progress" class="section">
-      <div class="section-heading">Profile</div>
+      <div class="section-heading">Account</div>
+      <div class="info-card">
+        <div id="account-signed-out">
+          <input type="email" class="auth-input" id="auth-email" placeholder="Email"/>
+          <input type="password" class="auth-input" id="auth-password" placeholder="Password"/>
+          <div class="ex-actions">
+            <button class="ex-action-btn" onclick="signUp()">Sign up</button>
+            <button class="ex-action-btn" onclick="logIn()">Log in</button>
+          </div>
+          <div class="info-body" id="auth-error" style="margin-top:8px;color:#e87a50"></div>
+          <div class="info-body" style="margin-top:8px">Sign in to back up your data to the cloud so it survives reinstalling the app.</div>
+        </div>
+        <div id="account-signed-in" hidden>
+          <div class="info-title">Signed in as <span id="account-email"></span></div>
+          <div class="info-body" id="sync-status">Synced</div>
+          <div class="ex-actions" style="margin-top:10px"><button class="ex-action-btn" onclick="logOut()">Log out</button></div>
+        </div>
+      </div>
+
+      <div class="section-heading" style="margin-top:8px">Profile</div>
       <div class="info-card">
         <div class="info-title">Body type: <span id="profile-bodytype-label"></span></div>
         <div class="info-body">Height: <span id="profile-height-label"></span> cm</div>
@@ -299,7 +319,24 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
   </nav>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBY6fvqR-Ocls_pVdxC2uUNe_n8cht-PfI",
+  authDomain: "one-more-kilo.firebaseapp.com",
+  projectId: "one-more-kilo",
+  storageBucket: "one-more-kilo.firebasestorage.app",
+  messagingSenderId: "736053430072",
+  appId: "1:736053430072:web:f08aef90ea2a907ef5a3cd"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+let currentUser = null;
+let syncTimer = null;
+
 // Exercise photos from free-exercise-db (CC0), served via jsDelivr CDN
 const IMAGE_BASE = 'https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/';
 
@@ -593,19 +630,105 @@ function saveChecklist(obj) {
   const cutoff = Date.now() - 60 * 24 * 60 * 60 * 1000;
   Object.keys(obj).forEach(date => { if (new Date(date).getTime() < cutoff) delete obj[date]; });
   localStorage.setItem('wk_checklist', JSON.stringify(obj));
+  syncToCloud();
 }
 function isDoneToday(key) { const c = getChecklist(); return !!(c[todayISO()] && c[todayISO()][key]); }
 
 function getLogs() { try { return JSON.parse(localStorage.getItem('wk_logs')) || {}; } catch (e) { return {}; } }
-function saveLogs(obj) { localStorage.setItem('wk_logs', JSON.stringify(obj)); }
+function saveLogs(obj) { localStorage.setItem('wk_logs', JSON.stringify(obj)); syncToCloud(); }
 
 function getMilestones() { try { return JSON.parse(localStorage.getItem('wk_milestones')) || []; } catch (e) { return []; } }
-function saveMilestones(arr) { localStorage.setItem('wk_milestones', JSON.stringify(arr)); }
+function saveMilestones(arr) { localStorage.setItem('wk_milestones', JSON.stringify(arr)); syncToCloud(); }
 
 function getProfile() { try { return JSON.parse(localStorage.getItem('wk_profile')) || null; } catch (e) { return null; } }
-function saveProfile(p) { localStorage.setItem('wk_profile', JSON.stringify(p)); }
+function saveProfile(p) { localStorage.setItem('wk_profile', JSON.stringify(p)); syncToCloud(); }
 function getWeightLog() { try { return JSON.parse(localStorage.getItem('wk_weightlog')) || []; } catch (e) { return []; } }
-function saveWeightLog(arr) { localStorage.setItem('wk_weightlog', JSON.stringify(arr)); }
+function saveWeightLog(arr) { localStorage.setItem('wk_weightlog', JSON.stringify(arr)); syncToCloud(); }
+
+// ---- cloud backup (Firebase) ----
+function showAuthError(msg) { const el = document.getElementById('auth-error'); if (el) el.textContent = msg; }
+
+function signUp() {
+  const email = document.getElementById('auth-email').value.trim();
+  const pw = document.getElementById('auth-password').value;
+  showAuthError('');
+  if (!email || !pw) { showAuthError('Enter an email and password.'); return; }
+  auth.createUserWithEmailAndPassword(email, pw).catch(e => showAuthError(e.message));
+}
+function logIn() {
+  const email = document.getElementById('auth-email').value.trim();
+  const pw = document.getElementById('auth-password').value;
+  showAuthError('');
+  if (!email || !pw) { showAuthError('Enter an email and password.'); return; }
+  auth.signInWithEmailAndPassword(email, pw).catch(e => showAuthError(e.message));
+}
+function logOut() { auth.signOut(); }
+
+function setSyncStatus(text) { const el = document.getElementById('sync-status'); if (el) el.textContent = text; }
+
+function collectLocalState() {
+  return {
+    profile: getProfile(),
+    logs: getLogs(),
+    checklist: getChecklist(),
+    milestones: getMilestones(),
+    weightlog: getWeightLog(),
+    updatedAt: Date.now()
+  };
+}
+
+function applyCloudState(data) {
+  if (data.profile) saveProfile(data.profile);
+  if (data.logs) saveLogs(data.logs);
+  if (data.checklist) saveChecklist(data.checklist);
+  if (data.milestones) saveMilestones(data.milestones);
+  if (data.weightlog) saveWeightLog(data.weightlog);
+  const profile = getProfile();
+  document.getElementById('onboard-overlay').hidden = true;
+  if (profile) applyBodyType(profile.bodyType);
+}
+
+function pullFromCloud() {
+  if (!currentUser) return;
+  setSyncStatus('Syncing…');
+  db.collection('users').doc(currentUser.uid).get().then(doc => {
+    if (doc.exists) {
+      applyCloudState(doc.data());
+      setSyncStatus('Synced');
+    } else {
+      syncToCloudNow();
+    }
+  }).catch(() => setSyncStatus('Sync error — will retry'));
+}
+
+function syncToCloud() {
+  if (!currentUser) return;
+  clearTimeout(syncTimer);
+  setSyncStatus('Syncing…');
+  syncTimer = setTimeout(syncToCloudNow, 1500);
+}
+function syncToCloudNow() {
+  if (!currentUser) return;
+  db.collection('users').doc(currentUser.uid).set(collectLocalState(), { merge: true })
+    .then(() => setSyncStatus('Synced'))
+    .catch(() => setSyncStatus('Sync error — will retry'));
+}
+
+auth.onAuthStateChanged(user => {
+  currentUser = user;
+  const outEl = document.getElementById('account-signed-out');
+  const inEl = document.getElementById('account-signed-in');
+  if (user) {
+    if (outEl) outEl.hidden = true;
+    if (inEl) inEl.hidden = false;
+    const emailEl = document.getElementById('account-email');
+    if (emailEl) emailEl.textContent = user.email;
+    pullFromCloud();
+  } else {
+    if (outEl) outEl.hidden = false;
+    if (inEl) inEl.hidden = true;
+  }
+});
 
 // ---- onboarding + body type ----
 let pendingBodyType = null;
