@@ -172,6 +172,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
     <input type="email" id="login-email" name="email" autocomplete="username" placeholder="you@example.com"/>
     <label for="login-password">Password</label>
     <input type="password" id="login-password" name="password" autocomplete="current-password" placeholder="Password"/>
+    <div id="login-invite-wrap" hidden>
+      <label for="login-invite">Invite code</label>
+      <input type="text" id="login-invite" autocomplete="off" placeholder="Ask the app owner for this"/>
+    </div>
     <button type="submit" id="login-submit">Log in</button>
     <div class="info-body" id="login-error" style="margin-top:8px;color:#e87a50"></div>
     <button type="button" class="link-btn" id="login-mode-toggle" onclick="toggleAuthMode()">New here? Sign up instead</button>
@@ -698,6 +702,7 @@ function saveWeightLog(arr) { localStorage.setItem('wk_weightlog', JSON.stringif
 
 // ---- cloud backup (Firebase) ----
 let authMode = 'login';
+const INVITE_CODE = 'melon'; // soft gate — this app is invite-only, ask the owner for the code
 
 function headerAccountClick() { if (!currentUser) openLoginOverlay(false); }
 
@@ -707,6 +712,7 @@ function openLoginOverlay(isInitial) {
   document.getElementById('login-error').textContent = '';
   document.getElementById('login-email').value = '';
   document.getElementById('login-password').value = '';
+  document.getElementById('login-invite').value = '';
   const skipBtn = document.getElementById('login-skip');
   skipBtn.style.display = isInitial ? '' : 'none';
   skipBtn.textContent = getProfile() ? 'Continue to app' : 'Continue without an account';
@@ -726,10 +732,11 @@ function toggleAuthMode() {
 function updateAuthModeUI() {
   const isLogin = authMode === 'login';
   document.getElementById('login-title').textContent = isLogin ? 'Welcome back' : 'Create your account';
-  document.getElementById('login-sub').textContent = isLogin ? 'Log in to restore your data, or start fresh on this device.' : 'Sign up to back up your data to the cloud so it survives reinstalling the app.';
+  document.getElementById('login-sub').textContent = isLogin ? 'Log in to restore your data, or start fresh on this device.' : 'This app is invite-only — ask the owner for an invite code to sign up.';
   document.getElementById('login-submit').textContent = isLogin ? 'Log in' : 'Sign up';
   document.getElementById('login-mode-toggle').textContent = isLogin ? 'New here? Sign up instead' : 'Already have an account? Log in';
   document.getElementById('login-password').autocomplete = isLogin ? 'current-password' : 'new-password';
+  document.getElementById('login-invite-wrap').hidden = isLogin;
 }
 
 // Submitting via a real <form> (rather than a plain button click) is what lets Safari/Chrome/Edge
@@ -746,6 +753,10 @@ function submitAuth() {
   const errEl = document.getElementById('login-error');
   errEl.textContent = '';
   if (!email || !pw) { errEl.textContent = 'Enter an email and password.'; return; }
+  if (authMode === 'signup') {
+    const invite = document.getElementById('login-invite').value.trim().toLowerCase();
+    if (invite !== INVITE_CODE) { errEl.textContent = 'Invalid invite code.'; return; }
+  }
   const action = authMode === 'login' ? auth.signInWithEmailAndPassword(email, pw) : auth.createUserWithEmailAndPassword(email, pw);
   action.catch(e => { errEl.textContent = e.message; });
 }
