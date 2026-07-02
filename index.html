@@ -188,6 +188,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
   <div class="scroll">
 
     <div id="tab-weekly" class="section active">
+      <div class="info-card" style="margin-bottom:16px">
+        <div class="progress-label"><span>This week's training</span><span id="week-progress-count">0/4 days</span></div>
+        <div class="prog-track"><div class="prog-fill" id="week-progress-fill" style="width:0%;background:var(--arms)"></div></div>
+      </div>
       <div class="day-scroll">
         <div class="day-chip active" style="--active-color:var(--chest)" onclick="showDay('chest',this)"><div class="day-num">Day 1</div><div class="day-name" id="day-name-chest">Chest & Tris</div><div class="day-dot"></div></div>
         <div class="day-chip" style="--active-color:var(--legs)" onclick="showDay('legs',this)"><div class="day-num">Day 2</div><div class="day-name" id="day-name-legs">Legs</div><div class="day-dot"></div></div>
@@ -735,7 +739,12 @@ function submitAuth() {
   const action = authMode === 'login' ? auth.signInWithEmailAndPassword(email, pw) : auth.createUserWithEmailAndPassword(email, pw);
   action.catch(e => { errEl.textContent = e.message; });
 }
-function logOut() { auth.signOut(); }
+function logOut() {
+  auth.signOut().then(() => {
+    ['wk_profile', 'wk_logs', 'wk_checklist', 'wk_milestones', 'wk_weightlog', 'wk_daydone'].forEach(k => localStorage.removeItem(k));
+    location.reload();
+  });
+}
 
 function renderHeaderAccount() {
   const el = document.getElementById('header-account');
@@ -994,6 +1003,7 @@ function toggleDayDone(slot) {
   else d[slot] = { checkedAt: Date.now() };
   saveDayDone(d);
   renderWeekCheck(slot);
+  renderWeekProgress();
 }
 
 function renderWeekCheck(slot) {
@@ -1014,7 +1024,19 @@ function renderWeekCheck(slot) {
   }
 }
 
-function renderAllWeekChecks() { ['chest', 'legs', 'arms', 'full'].forEach(renderWeekCheck); }
+function renderAllWeekChecks() {
+  ['chest', 'legs', 'arms', 'full'].forEach(renderWeekCheck);
+  renderWeekProgress();
+}
+
+function renderWeekProgress() {
+  const countEl = document.getElementById('week-progress-count');
+  const fillEl = document.getElementById('week-progress-fill');
+  if (!countEl || !fillEl) return;
+  const done = ['chest', 'legs', 'arms', 'full'].filter(isDayDoneThisWeek).length;
+  countEl.textContent = `${done}/4 days`;
+  fillEl.style.width = (done / 4 * 100) + '%';
+}
 
 // ---- set logging ----
 function logSet(key) {
