@@ -173,8 +173,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
     <label for="login-password">Password</label>
     <input type="password" id="login-password" name="password" autocomplete="current-password" placeholder="Password"/>
     <div id="login-invite-wrap" hidden>
-      <label for="login-invite">Invite code</label>
-      <input type="text" id="login-invite" autocomplete="off" placeholder="Ask the app owner for this"/>
+      <label for="login-invite">Speak, friend, and enter.</label>
+      <input type="text" id="login-invite" autocomplete="off" placeholder="Ask the app owner"/>
     </div>
     <button type="submit" id="login-submit">Log in</button>
     <div class="info-body" id="login-error" style="margin-top:8px;color:#e87a50"></div>
@@ -337,7 +337,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
         <div class="info-body" id="bmi-note" style="margin-top:4px"></div>
         <div class="ex-actions" style="margin-top:12px">
           <button class="ex-action-btn" onclick="openBodyTypePicker()">Switch body type</button>
+          <button class="ex-action-btn" onclick="toggleHeightPanel()">Edit height</button>
           <button class="ex-action-btn" onclick="toggleWeightPanel()">+ Log weight</button>
+        </div>
+        <div class="log-panel" id="height-edit-panel" hidden>
+          <div class="log-form">
+            <input type="number" placeholder="Height (cm)" id="height-input" min="100" max="250"/>
+            <button onclick="saveHeight()">Save</button>
+          </div>
         </div>
         <div class="log-panel" id="weight-log-panel" hidden>
           <div class="log-form">
@@ -702,7 +709,7 @@ function saveWeightLog(arr) { localStorage.setItem('wk_weightlog', JSON.stringif
 
 // ---- cloud backup (Firebase) ----
 let authMode = 'login';
-const INVITE_CODE = 'melon'; // soft gate — this app is invite-only, ask the owner for the code
+const INVITE_CODE = 'mellon'; // soft gate — this app is invite-only, ask the owner for the code. Change this string to change the code (compared lowercase, so case doesn't matter).
 
 function headerAccountClick() { if (!currentUser) openLoginOverlay(false); }
 
@@ -926,6 +933,27 @@ function updateProfileLabels() {
   if (btLabel) btLabel.textContent = BODY_TYPE_NAMES[profile.bodyType] || profile.bodyType;
   if (hLabel) hLabel.textContent = profile.heightCm;
   renderWeightHistory();
+}
+
+// ---- edit height ----
+function toggleHeightPanel() {
+  const panel = document.getElementById('height-edit-panel');
+  if (!panel) return;
+  panel.hidden = !panel.hidden;
+  if (!panel.hidden) {
+    const profile = getProfile();
+    document.getElementById('height-input').value = profile ? profile.heightCm : '';
+  }
+}
+function saveHeight() {
+  const el = document.getElementById('height-input');
+  const h = parseFloat(el.value);
+  if (!h) { el.focus(); return; }
+  const profile = getProfile() || {};
+  profile.heightCm = h;
+  saveProfile(profile);
+  document.getElementById('height-edit-panel').hidden = true;
+  updateProfileLabels();
 }
 
 // ---- BMI ----
