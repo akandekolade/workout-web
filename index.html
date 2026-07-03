@@ -1412,7 +1412,8 @@ function logSet(key) {
 }
 
 function updateLastLogged(key) {
-  const logs = (getLogs()[key] || []).slice().sort((a, b) => b.date.localeCompare(a.date));
+  // Newest first; same-day entries ordered by when they were logged
+  const logs = (getLogs()[key] || []).map((l, i) => ({ ...l, idx: i })).sort((a, b) => b.date.localeCompare(a.date) || b.idx - a.idx);
   const lastEl = document.querySelector(`[data-last-for="${key}"]`);
   const histEl = document.getElementById('log-history-' + key);
   if (!logs.length) {
@@ -1421,7 +1422,18 @@ function updateLastLogged(key) {
     return;
   }
   if (lastEl) lastEl.textContent = `Last: ${logs[0].weight}kg × ${logs[0].reps} (${formatDateShort(logs[0].date)})`;
-  if (histEl) histEl.innerHTML = logs.slice(0, 5).map(l => `<div><span>${l.weight}kg × ${l.reps}</span><span>${formatDateShort(l.date)}</span></div>`).join('');
+  if (histEl) histEl.innerHTML = logs.slice(0, 5).map(l => `<div><span>${l.weight}kg × ${l.reps}</span><span>${formatDateShort(l.date)} <button class="milestone-del" onclick="deleteSetEntry('${key}',${l.idx})" aria-label="Delete set">✕</button></span></div>`).join('');
+}
+
+function deleteSetEntry(key, idx) {
+  const logs = getLogs();
+  if (!logs[key]) return;
+  logs[key].splice(idx, 1);
+  if (!logs[key].length) delete logs[key];
+  saveLogs(logs);
+  updateLastLogged(key);
+  renderMilestones();
+  renderActivity();
 }
 
 function toggleLogPanel(key) {
