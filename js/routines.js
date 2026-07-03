@@ -289,3 +289,66 @@ function showDayById(dayId) {
     c.classList.toggle('active', (c.getAttribute('onclick') || '').includes(`'${dayId}'`));
   });
 }
+
+// ---------- add an exercise to a plan day or routine (from the Exercise Library) ----------
+function openAddToPlan(key) {
+  const ex = EXERCISES.find(e => e.key === key);
+  if (!ex) return;
+  let el = document.getElementById('addto-sheet');
+  if (!el) {
+    el = document.createElement('div');
+    el.className = 'onboard-overlay';
+    el.id = 'addto-sheet';
+    document.body.appendChild(el);
+  }
+  const plan = currentPlan();
+  const r = typeof activeRoutine === 'function' ? activeRoutine() : null;
+  const planName = r ? `“${r.name}”` : 'this week’s plan';
+  const planRows = plan.map((day, i) =>
+    `<button class="picker-row" onclick="addToPlanDay('${key}',${i})"><span>${day.label}</span><span class="picker-meta">Day ${i + 1}</span></button>`
+  ).join('');
+  const routines = getRoutines();
+  const routineRows = routines.map(rt =>
+    rt.days.map((day, i) =>
+      `<button class="picker-row" onclick="addToRoutineDay('${key}','${rt.id}',${i})"><span>${rt.name} — ${day.label}</span><span class="picker-meta">permanent</span></button>`
+    ).join('')
+  ).join('');
+  el.innerHTML = `
+    <div class="onboard-title">Add ${ex.name}</div>
+    <div class="seg-label">To ${planName} (as this week's extra)</div>
+    ${planRows}
+    ${routineRows ? `<div class="seg-label" style="margin-top:14px">To one of my routines (permanently)</div>${routineRows}` : ''}
+    <div class="info-body" id="addto-msg" style="margin-top:10px;color:var(--primary);text-align:center"></div>
+    <button class="link-btn muted" onclick="document.getElementById('addto-sheet').hidden = true">Close</button>`;
+  el.hidden = false;
+}
+
+function addToPlanDay(key, dayIdx) {
+  const dayId = 'd' + (dayIdx + 1);
+  const extras = getExtras();
+  extras[dayId] = extras[dayId] || [];
+  const day = currentPlan()[dayIdx];
+  const already = day.ex.includes(key) || extras[dayId].some(e => e.key === key);
+  if (!already) {
+    extras[dayId].push({ key, addedAt: Date.now() });
+    saveExtras(extras);
+    renderPlan(); // no-op off the Plan page; refreshes if we're on it
+  }
+  const msg = document.getElementById('addto-msg');
+  if (msg) msg.textContent = already ? `Already on ${day.label}.` : `Added to ${day.label} for this week ✓`;
+}
+
+function addToRoutineDay(key, routineId, dayIdx) {
+  const routines = getRoutines();
+  const rt = routines.find(x => x.id === routineId);
+  if (!rt || !rt.days[dayIdx]) return;
+  const already = rt.days[dayIdx].ex.includes(key);
+  if (!already) {
+    rt.days[dayIdx].ex.push(key);
+    saveRoutines(routines);
+    renderPlan();
+    renderRoutinesPage();
+  }
+  const msg = document.getElementById('addto-msg');
+  if (msg) msg.textContent = already ? `Already in ${rt.name} — ${rt.days[dayIdx].label}.` : `Added to ${rt.name} — ${rt.days[dayIdx].label} ✓`;
+}

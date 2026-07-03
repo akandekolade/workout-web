@@ -59,10 +59,9 @@ function renderLibrary() {
       (groups[g] = groups[g] || []).push(ex);
     });
     listEl.innerHTML = Object.keys(groups).sort().map(g =>
-      `<div class="gal-date">${g}</div>` + groups[g].map(renderCard).join('')
+      `<div class="gal-date">${g}</div>` + groups[g].map(ex => renderCard(ex, { library: true })).join('')
     ).join('');
   } else {
-    listEl.innerHTML = matches.map(renderCard).join('');
+    listEl.innerHTML = matches.map(ex => renderCard(ex, { library: true })).join('');
   }
-  EXERCISES.forEach(ex => updateLastLogged(ex.key));
 }

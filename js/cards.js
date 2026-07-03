@@ -347,34 +347,14 @@ function toggleCardOpenEl(headEl) {
   }
 }
 
-function renderCard(ex) {
+function renderCard(ex, opts) {
   const done = isDoneToday(ex.key);
   const steps = (EXERCISE_STEPS[ex.key] || []).map(s => `<li>${s}</li>`).join('');
-  return `<div class="ex-card ${done ? 'done' : ''}" data-ex-key="${ex.key}" data-rest="${ex.rest}">
-    <div class="ex-head" onclick="toggleCardOpenEl(this)" role="button" aria-label="Show ${ex.name} details">
-      <img class="ex-thumb" src="${IMAGE_BASE + ex.img}" alt="" loading="lazy"/>
-      <div class="ex-head-mid">
-        <div class="ex-name">${ex.name}</div>
-        <span class="ex-badge ${ex.badgeClass}">${ex.badge}</span>
-      </div>
-      <button class="ex-check ${done ? 'done' : ''}" onclick="event.stopPropagation();toggleDone('${ex.key}')" aria-label="Mark done today">✓</button>
-      <span class="ex-chevron">▾</span>
-    </div>
-    <div class="ex-collapse">
-    <div class="ex-img-wrap" data-img-base="${ex.img}" data-step="0">
-      <div class="img-slot"><div class="img-loading">⏳</div></div>
-      <button class="step-arrow prev" onclick="flipStep('${ex.key}')" aria-label="Previous step">‹</button>
-      <button class="step-arrow next" onclick="flipStep('${ex.key}')" aria-label="Next step">›</button>
-      <div class="step-dots"><span class="step-dot active" data-dot="0"></span><span class="step-dot" data-dot="1"></span></div>
-    </div>
-    <div class="ex-body">
-      <div class="ex-stats">
-        <div class="ex-stat"><div class="ex-stat-val ${ex.statColor}">${ex.sets}</div><div class="ex-stat-lbl">Sets</div></div>
-        <div class="ex-stat"><div class="ex-stat-val ${ex.statColor}">${ex.reps}</div><div class="ex-stat-lbl">${ex.repsLabel || 'Reps'}</div></div>
-        <div class="ex-stat"><div class="ex-stat-val ${ex.statColor}">${ex.rest}s</div><div class="ex-stat-lbl">Rest</div></div>
-      </div>
-      <div class="ex-tip">${ex.tip}</div>
-      <ol class="ex-steps">${steps}</ol>
+  // Library mode strips training controls (check/log/timer): the library is for
+  // learning and browsing; training happens on the Plan page.
+  const lib = !!(opts && opts.library);
+  const trainingBody = lib ? `
+      <button class="ex-action-btn" style="width:100%;margin-top:12px" onclick="event.stopPropagation();openAddToPlan('${ex.key}')">＋ Add to a routine or day</button>` : `
       <div class="ex-last" data-last-for="${ex.key}"></div>
       <div class="ex-actions">
         <button class="ex-action-btn" onclick="toggleTimerPanel('${ex.key}')">⏱ Rest</button>
@@ -392,7 +372,33 @@ function renderCard(ex) {
           <button onclick="logSet('${ex.key}')">Log</button>
         </div>
         <div class="log-history" id="log-history-${ex.key}"></div>
+      </div>`;
+  return `<div class="ex-card ${done && !lib ? 'done' : ''}" data-ex-key="${ex.key}" data-rest="${ex.rest}">
+    <div class="ex-head" onclick="toggleCardOpenEl(this)" role="button" aria-label="Show ${ex.name} details">
+      <img class="ex-thumb" src="${IMAGE_BASE + ex.img}" alt="" loading="lazy"/>
+      <div class="ex-head-mid">
+        <div class="ex-name">${ex.name}</div>
+        <span class="ex-badge ${ex.badgeClass}">${ex.badge}</span>
       </div>
+      ${lib ? '' : `<button class="ex-check ${done ? 'done' : ''}" onclick="event.stopPropagation();toggleDone('${ex.key}')" aria-label="Mark done today">✓</button>`}
+      <span class="ex-chevron">▾</span>
+    </div>
+    <div class="ex-collapse">
+    <div class="ex-img-wrap" data-img-base="${ex.img}" data-step="0">
+      <div class="img-slot"><div class="img-loading">⏳</div></div>
+      <button class="step-arrow prev" onclick="flipStep('${ex.key}')" aria-label="Previous step">‹</button>
+      <button class="step-arrow next" onclick="flipStep('${ex.key}')" aria-label="Next step">›</button>
+      <div class="step-dots"><span class="step-dot active" data-dot="0"></span><span class="step-dot" data-dot="1"></span></div>
+    </div>
+    <div class="ex-body">
+      <div class="ex-stats">
+        <div class="ex-stat"><div class="ex-stat-val ${ex.statColor}">${ex.sets}</div><div class="ex-stat-lbl">Sets</div></div>
+        <div class="ex-stat"><div class="ex-stat-val ${ex.statColor}">${ex.reps}</div><div class="ex-stat-lbl">${ex.repsLabel || 'Reps'}</div></div>
+        <div class="ex-stat"><div class="ex-stat-val ${ex.statColor}">${ex.rest}s</div><div class="ex-stat-lbl">Rest</div></div>
+      </div>
+      <div class="ex-tip">${ex.tip}</div>
+      <ol class="ex-steps">${steps}</ol>
+      ${trainingBody}
     </div>
     </div>
   </div>`;
