@@ -1,7 +1,7 @@
 :root {
   --bg: #0f0f0f; --surface: #1a1a1a; --card: #222; --border: rgba(255,255,255,0.08);
   --text: #f0ede8; --muted: #888780; --nav-bg: rgba(15,15,15,.92); --img-bg: #181818;
-  --chest: #e87a50; --arms: #4a8fd4; --legs: #5db87a; --full: #9b7fe8; --back: #4fc3c9; --core: #e8b34a;
+  --chest: #e87a50; --arms: #4a8fd4; --legs: #5db87a; --full: #14b8a6; --back: #4fc3c9; --core: #b0a99f;
   --safe-top: env(safe-area-inset-top,0px); --safe-bottom: env(safe-area-inset-bottom,0px);
   --primary: #34d399; --on-primary: #06281c;
 }
@@ -69,11 +69,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .badge-chest{background:rgba(232,122,80,.15);color:var(--chest)}
 .badge-arms{background:rgba(74,143,212,.15);color:var(--arms)}
 .badge-legs{background:rgba(93,184,122,.15);color:var(--legs)}
-.badge-full{background:rgba(155,127,232,.15);color:var(--full)}
+.badge-full{background:rgba(20,184,166,.15);color:var(--full)}
 .badge-tri{background:rgba(232,122,80,.1);color:#e87a50}
 .badge-sh{background:rgba(93,184,122,.1);color:#5db87a}
 .badge-back{background:rgba(79,195,201,.15);color:var(--back)}
-.badge-core{background:rgba(232,179,74,.15);color:var(--core)}
+.badge-core{background:rgba(176,169,159,.18);color:var(--core)}
 .img-credit{position:absolute;bottom:4px;right:6px;font-size:9px;color:var(--muted);opacity:.6}
 .ex-top-right{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:8px}
 .ex-check{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border);background:none;color:var(--muted);font-size:13px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:0}
@@ -181,3 +181,31 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .cal-key{display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--primary);vertical-align:-1px}
 .week-card-row{display:flex;align-items:center;gap:14px}
 .week-card-row > div:first-child{flex:1}
+
+/* ===== FitBody-inspired re-skin (green primary, soft geometry, light/dark aware) ===== */
+.info-card,.ex-card,.milestone-card,.add-milestone-form{border-radius:20px}
+.ex-img-wrap{height:190px}
+.ex-body{padding:16px 18px}
+.day-chip{border-radius:16px;padding:12px 16px}
+.day-chip.active{border-width:1.5px}
+.week-check{border-radius:18px}
+.ex-action-btn{border-radius:14px;padding:11px}
+.onboard-form button,.add-milestone-form button{border-radius:16px}
+.log-form input,.auth-input,.add-milestone-form select,.add-milestone-form input,.onboard-form input{border-radius:12px}
+.timer-panel,.log-panel{border-radius:16px}
+.prog-track{height:8px}
+.seg{border-radius:14px;padding:4px}
+.seg button{border-radius:10px;padding:9px 4px}
+.section-heading{font-size:20px;letter-spacing:-.4px}
+.ex-section-label{display:inline-block;background:var(--primary);color:var(--on-primary);padding:6px 14px;border-radius:20px;font-weight:700;letter-spacing:.04em;margin-bottom:14px}
+.header h1{font-size:24px}
+
+/* Floating pill bottom nav */
+.nav{left:10px;right:10px;bottom:calc(var(--safe-bottom) + 10px);padding-bottom:0;border:.5px solid var(--border);border-radius:24px;overflow:hidden}
+.nav-item{padding:9px 0 8px;margin:5px 4px;border-radius:18px}
+.nav-item.active{background:var(--primary);color:var(--on-primary)}
+.nav-item.active .nav-icon{transform:scale(1.05)}
+.scroll{padding-bottom:calc(var(--safe-bottom) + 92px)}
+
+/* Cards pop slightly off the background in light mode */
+html[data-theme="light"] .info-card,html[data-theme="light"] .ex-card,html[data-theme="light"] .milestone-card{box-shadow:0 1px 6px rgba(0,0,0,.06)}

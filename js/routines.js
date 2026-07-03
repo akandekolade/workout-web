@@ -1,6 +1,6 @@
 // Custom routines: list, builder, exercise picker, and ad-hoc day extras
 
-const DAY_COLOR_CYCLE = ['chest', 'back', 'legs', 'arms', 'full', 'core', 'sh'];
+const DAY_COLOR_CYCLE = ['chest', 'back', 'legs', 'arms', 'full', 'core', 'chest'];
 const MUSCLE_GROUPS = {
   'badge-chest': 'Chest', 'badge-tri': 'Triceps', 'badge-back': 'Back',
   'badge-arms': 'Biceps', 'badge-sh': 'Shoulders', 'badge-legs': 'Legs',
