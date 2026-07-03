@@ -288,7 +288,20 @@ function getDaysPerWeek() {
   const p = getProfile();
   return (p && [4,5,6,7].includes(p.daysPerWeek)) ? p.daysPerWeek : 4;
 }
-function currentPlan() { return PLANS[currentBodyType][getDaysPerWeek()]; }
+// Resolves what the Plan page shows: the active custom routine, or the body-type template
+function currentPlan() {
+  const a = getActive();
+  if (a && a.kind === 'custom') {
+    const r = getRoutines().find(x => x.id === a.routineId);
+    if (r && r.days && r.days.length) return r.days;
+  }
+  return PLANS[currentBodyType][getDaysPerWeek()];
+}
+function activeRoutine() {
+  const a = getActive();
+  if (a && a.kind === 'custom') return getRoutines().find(x => x.id === a.routineId) || null;
+  return null;
+}
 
 const BODY_GUIDES = {
   ecto: {
@@ -349,6 +362,9 @@ const BODY_GUIDES = {
 
 // indexes (1-based into the plan array), 'R' is a rest day.
 const WEEK_LAYOUTS = {
+  1: [1, 'R', 'R', 'R', 'R', 'R', 'R'],
+  2: [1, 'R', 'R', 2, 'R', 'R', 'R'],
+  3: [1, 'R', 2, 'R', 3, 'R', 'R'],
   4: [1, 2, 'R', 3, 4, 'R', 'R'],
   5: [1, 2, 3, 'R', 4, 5, 'R'],
   6: [1, 2, 3, 4, 5, 6, 'R'],
@@ -357,8 +373,8 @@ const WEEK_LAYOUTS = {
 
 // Calendar day number (1-7) for a given training-day index
 function calendarDayFor(trainIdx) {
-  const layout = WEEK_LAYOUTS[getDaysPerWeek()];
-  return layout.indexOf(trainIdx) + 1;
+  const layout = WEEK_LAYOUTS[currentPlan().length];
+  return layout ? layout.indexOf(trainIdx) + 1 : trainIdx;
 }
 
 const BODY_TYPE_NAMES = { ecto: 'Ectomorph', meso: 'Mesomorph', endo: 'Endomorph' };

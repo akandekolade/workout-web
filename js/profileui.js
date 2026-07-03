@@ -19,7 +19,10 @@ function updateProfileLabels() {
   const dLabel = document.getElementById('profile-days-label');
   if (btLabel) btLabel.textContent = BODY_TYPE_NAMES[profile.bodyType] || profile.bodyType;
   if (hLabel) hLabel.textContent = profile.heightCm;
-  if (dLabel) dLabel.textContent = getDaysPerWeek();
+  if (dLabel) {
+    const r = typeof activeRoutine === 'function' ? activeRoutine() : null;
+    dLabel.textContent = r ? `custom "${r.name}" — ${r.days.length}` : getDaysPerWeek();
+  }
   if (wLabel) {
     const log = sortedWeightLog();
     wLabel.textContent = log.length ? `${log[0].weight} kg (${formatDateShort(log[0].date)})` : '—';

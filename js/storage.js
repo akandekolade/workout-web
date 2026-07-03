@@ -58,3 +58,24 @@ function isDayDoneThisWeek(slot) {
   return !!(entry && entry.checkedAt && (Date.now() - entry.checkedAt) < WEEK_MS);
 }
 
+
+// ---- custom routines ----
+function getRoutines() { try { return JSON.parse(localStorage.getItem('wk_routines')) || []; } catch (e) { return []; } }
+function saveRoutines(arr) { localStorage.setItem('wk_routines', JSON.stringify(arr)); syncToCloud(); }
+
+// What the Plan page shows: a body-type template (default) or a custom routine
+function getActive() { try { return JSON.parse(localStorage.getItem('wk_active')) || null; } catch (e) { return null; } }
+function saveActive(a) { localStorage.setItem('wk_active', JSON.stringify(a)); syncToCloud(); }
+
+// Ad-hoc extra exercises added to a day for the current week (expire after 7 days)
+function getExtras() {
+  let all;
+  try { all = JSON.parse(localStorage.getItem('wk_extras')) || {}; } catch (e) { all = {}; }
+  const cutoff = Date.now() - WEEK_MS;
+  Object.keys(all).forEach(dayId => {
+    all[dayId] = (all[dayId] || []).filter(e => e.addedAt > cutoff);
+    if (!all[dayId].length) delete all[dayId];
+  });
+  return all;
+}
+function saveExtras(obj) { localStorage.setItem('wk_extras', JSON.stringify(obj)); syncToCloud(); }

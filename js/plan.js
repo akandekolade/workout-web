@@ -49,9 +49,13 @@ function renderPlan() {
   }
   chipsEl.innerHTML = chips;
 
+  const allExtras = getExtras();
   sectionsEl.innerHTML = plan.map((day, i) => {
     const id = 'd' + (i + 1);
     const cards = day.ex.map(k => EXERCISES.find(e => e.key === k)).filter(Boolean).map(renderCard).join('');
+    const extraCards = (allExtras[id] || [])
+      .map(e => EXERCISES.find(x => x.key === e.key)).filter(Boolean)
+      .map(ex => `<div>${renderCard(ex)}<button class="link-btn muted" style="margin-top:-8px" onclick="removeExtra('${id}','${ex.key}')">Remove extra exercise ✕</button></div>`).join('');
     return `<div id="ex-${id}" ${i === 0 ? '' : 'style="display:none"'}>
       <div class="ex-section-label">${day.label} · Day ${calendarDayFor(i + 1)}</div>
       <div class="week-check" id="week-check-wrap-${id}" onclick="toggleDayDone('${id}')">
@@ -59,7 +63,8 @@ function renderPlan() {
         <div><div class="week-check-title">This week's session</div><div class="week-check-sub" id="week-check-sub-${id}"></div></div>
       </div>
       <div class="day-progress" data-day-progress="${id}"></div>
-      <div class="ex-card-list" data-day-list="${id}">${cards}</div>
+      <div class="ex-card-list" data-day-list="${id}">${cards}${extraCards ? `<div class="ex-section-label" style="margin-top:4px">Extras this week</div>${extraCards}` : ''}</div>
+      <button class="ex-action-btn" style="width:100%;margin-bottom:16px" onclick="addExtraTo('${id}')">+ Add an extra exercise to this day</button>
     </div>`;
   }).join('');
 

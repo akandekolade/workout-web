@@ -105,7 +105,7 @@ async function submitAuth() {
 }
 function logOut() {
   auth.signOut().then(() => {
-    ['wk_profile', 'wk_logs', 'wk_checklist', 'wk_milestones', 'wk_weightlog', 'wk_daydone'].forEach(k => localStorage.removeItem(k));
+    ['wk_profile', 'wk_logs', 'wk_checklist', 'wk_milestones', 'wk_weightlog', 'wk_daydone', 'wk_routines', 'wk_active', 'wk_extras'].forEach(k => localStorage.removeItem(k));
     location.reload();
   });
 }
@@ -130,6 +130,9 @@ function collectLocalState() {
     milestones: getMilestones(),
     weightlog: getWeightLog(),
     daydone: getDayDone(),
+    routines: getRoutines(),
+    active: getActive(),
+    extras: getExtras(),
     updatedAt: Date.now()
   };
 }
@@ -141,6 +144,9 @@ function applyCloudState(data) {
   if (data.milestones) saveMilestones(data.milestones);
   if (data.weightlog) saveWeightLog(data.weightlog);
   if (data.daydone) saveDayDone(data.daydone);
+  if (data.routines) saveRoutines(data.routines);
+  if (data.active) saveActive(data.active);
+  if (data.extras) saveExtras(data.extras);
   const profile = getProfile();
   document.getElementById('onboard-overlay').hidden = true;
   closeLoginOverlay();
