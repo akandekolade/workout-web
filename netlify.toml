@@ -1,0 +1,11 @@
+# Netlify configuration for One more Kilo!
+[build]
+  # Static site lives at the repo root; no build step needed
+  publish = "."
+  functions = "netlify/functions"
+
+# Serve fresh HTML immediately after every deploy (no stale-cache delay)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
