@@ -30,9 +30,12 @@
   </div>
   <div class="scroll">
     <div class="section active" id="tab-weekly">
-      <div class="info-card" style="margin-bottom:16px">
-        <div class="progress-label"><span>This week's training</span><span id="week-progress-count">0/4 days</span></div>
-        <div class="prog-track"><div class="prog-fill" id="week-progress-fill" style="width:0%;background:var(--primary)"></div></div>
+      <div class="info-card week-card-row" style="margin-bottom:16px">
+        <div>
+          <div class="progress-label"><span>This week's training</span><span id="week-progress-count">0/4 days</span></div>
+          <div class="prog-track"><div class="prog-fill" id="week-progress-fill" style="width:0%;background:var(--primary)"></div></div>
+        </div>
+        <div id="week-ring"></div>
       </div>
       <div class="day-scroll" id="day-scroll"></div>
       <div id="day-sections"></div>
@@ -50,6 +53,7 @@
 <script src="js/profileui.js"></script>
 <script src="js/cards.js"></script>
 <script src="js/plan.js"></script>
+<script src="js/charts.js"></script>
 <script src="js/routines.js"></script>
 <script src="js/init.js"></script>
 </body>

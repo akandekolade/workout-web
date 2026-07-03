@@ -200,6 +200,8 @@ function renderWeekProgress() {
   const partials = done.filter(id => dayDone[id] && dayDone[id].partial).length;
   countEl.textContent = `${done.length}/${ids.length} days${partials ? ` (${partials} partial)` : ''}`;
   fillEl.style.width = (done.length / ids.length * 100) + '%';
+  const ringEl = document.getElementById('week-ring');
+  if (ringEl && typeof svgRing === 'function') ringEl.innerHTML = svgRing(done.length / ids.length, `${done.length}/${ids.length}`, 'Week completion');
 }
 
 

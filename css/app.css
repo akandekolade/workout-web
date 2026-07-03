@@ -165,3 +165,19 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .mini-btn{background:var(--card);border:.5px solid var(--border);color:var(--muted);border-radius:6px;width:26px;height:26px;font-size:12px;cursor:pointer;margin-left:4px}
 #exercise-picker{z-index:1500}
 #picker-list{max-height:65vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#progress-header{display:flex;align-items:center;gap:14px}
+.ph-avatar{width:52px;height:52px;border-radius:50%;background:var(--primary);color:var(--on-primary);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;flex-shrink:0}
+.ph-pills{display:flex;gap:8px;flex:1}
+.ph-pill{flex:1;background:var(--surface);border:.5px solid var(--border);border-radius:12px;padding:8px 6px;text-align:center}
+.ph-pill b{display:block;font-size:14px}
+.ph-pill span{font-size:10px;color:var(--muted)}
+.cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-dow{text-align:center;font-size:10px;color:var(--muted);padding:2px 0}
+.cal-day{text-align:center;font-size:12px;padding:7px 0;border-radius:8px;color:var(--muted)}
+.cal-day.trained{background:var(--primary);color:var(--on-primary);font-weight:700}
+.cal-day.today{outline:1.5px solid var(--primary);color:var(--text)}
+.cal-day.trained.today{color:var(--on-primary)}
+.cal-key{display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--primary);vertical-align:-1px}
+.week-card-row{display:flex;align-items:center;gap:14px}
+.week-card-row > div:first-child{flex:1}

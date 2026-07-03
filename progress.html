@@ -30,8 +30,34 @@
   </div>
   <div class="scroll">
     <div class="section active">
-      <div class="section-heading" style="margin-top:8px">Recent activity</div>
-      <div id="activity-list"></div>
+      <div class="info-card" id="progress-header"></div>
+
+      <div class="seg" id="progress-seg" style="margin:14px 0">
+        <button data-view="log" onclick="setProgressView('log')" class="active">Workout log</button>
+        <button data-view="charts" onclick="setProgressView('charts')">Charts</button>
+      </div>
+
+      <div id="progress-log">
+        <div class="info-card" id="cal-card"></div>
+        <div class="section-heading" style="margin-top:16px">Recent activity</div>
+        <div id="activity-list"></div>
+      </div>
+
+      <div id="progress-charts" hidden>
+        <div class="info-card">
+          <div class="info-title">Body weight</div>
+          <div id="chart-weight"></div>
+        </div>
+        <div class="info-card">
+          <div class="info-title">Lift progress <span class="info-body">(best set weight per day)</span></div>
+          <select id="chart-ex-select" class="auth-input" onchange="setChartExercise(this.value)" style="margin:8px 0"></select>
+          <div id="chart-exercise"></div>
+        </div>
+        <div class="info-card">
+          <div class="info-title">Training days per week</div>
+          <div id="chart-weeks"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -46,6 +72,7 @@
 <script src="js/profileui.js"></script>
 <script src="js/cards.js"></script>
 <script src="js/plan.js"></script>
+<script src="js/charts.js"></script>
 <script src="js/routines.js"></script>
 <script src="js/init.js"></script>
 </body>
