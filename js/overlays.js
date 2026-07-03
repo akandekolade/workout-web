@@ -87,10 +87,13 @@ const SHARED_OVERLAYS_HTML = `
   <div class="onboard-sub">Pick how often you can train and the body type that best matches your goal — this builds your weekly plan. You can change both anytime from the Progress tab.</div>
   <div class="seg-label" style="margin-top:0">How many days a week can you train?</div>
   <div class="seg" id="onboard-days" style="margin-bottom:16px">
-    <button data-days="4" onclick="selectDaysCard(4)">4 days</button>
-    <button data-days="5" onclick="selectDaysCard(5)">5 days</button>
-    <button data-days="6" onclick="selectDaysCard(6)">6 days</button>
-    <button data-days="7" onclick="selectDaysCard(7)">7 days</button>
+    <button data-days="1" onclick="selectDaysCard(1)">1</button>
+    <button data-days="2" onclick="selectDaysCard(2)">2</button>
+    <button data-days="3" onclick="selectDaysCard(3)">3</button>
+    <button data-days="4" onclick="selectDaysCard(4)">4</button>
+    <button data-days="5" onclick="selectDaysCard(5)">5</button>
+    <button data-days="6" onclick="selectDaysCard(6)">6</button>
+    <button data-days="7" onclick="selectDaysCard(7)">7</button>
   </div>
   <div class="seg-label">Body type</div>
   <div id="bodytype-picker">

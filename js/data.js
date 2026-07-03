@@ -187,6 +187,18 @@ let currentBodyType = 'ecto';
 // label (section heading), color (day accent var), ex (exercise keys from the pool)
 const PLANS = {
   ecto: {
+    1: [
+      { chip:'Full Body', label:'Full-Body Essentials', color:'full', ex:['barbell-back-squat','barbell-bench-press','pull-up','overhead-press','plank'] }
+    ],
+    2: [
+      { chip:'Upper', label:'Upper Body Power', color:'chest', ex:['barbell-bench-press','overhead-press','lat-pulldown','seated-cable-row','skull-crushers'] },
+      { chip:'Lower', label:'Lower Body & Core', color:'legs', ex:['barbell-back-squat','romanian-deadlift','leg-press','standing-calf-raise','plank'] }
+    ],
+    3: [
+      { chip:'Full A', label:'Full Body A — Squat Focus', color:'legs', ex:['barbell-back-squat','barbell-bench-press','seated-cable-row','plank'] },
+      { chip:'Full B', label:'Full Body B — Hinge Focus', color:'back', ex:['deadlift','overhead-press','lat-pulldown','hanging-leg-raise'] },
+      { chip:'Full C', label:'Full Body C — Volume', color:'chest', ex:['leg-press','incline-dumbbell-press','pull-up','barbell-curl','standing-calf-raise'] }
+    ],
     4: [
       { chip:'Chest & Tris', label:'Chest, Triceps & Abs', color:'chest', ex:['barbell-bench-press','incline-dumbbell-press','cable-chest-fly','close-grip-bench-press','tricep-pushdown','cable-crunch'] },
       { chip:'Legs', label:'Legs & Glutes', color:'legs', ex:['barbell-back-squat','romanian-deadlift','leg-press','walking-lunges','standing-calf-raise'] },
@@ -219,6 +231,18 @@ const PLANS = {
     ]
   },
   meso: {
+    1: [
+      { chip:'Total Body', label:'Total-Body Session', color:'full', ex:['front-squat','incline-barbell-bench-press','bent-over-row','seated-dumbbell-press','russian-twist'] }
+    ],
+    2: [
+      { chip:'Upper', label:'Upper Body', color:'chest', ex:['incline-barbell-bench-press','bent-over-row','seated-dumbbell-press','hammer-curl','bench-dips'] },
+      { chip:'Lower', label:'Lower Body & Core', color:'legs', ex:['front-squat','lying-leg-curl','leg-extension','seated-calf-raise','reverse-crunch'] }
+    ],
+    3: [
+      { chip:'Push', label:'Push Day', color:'chest', ex:['incline-barbell-bench-press','seated-dumbbell-press','dumbbell-flyes','seated-triceps-press'] },
+      { chip:'Pull', label:'Pull Day', color:'back', ex:['bent-over-row','one-arm-dumbbell-row','face-pull','preacher-curl'] },
+      { chip:'Legs & Core', label:'Legs & Core', color:'legs', ex:['front-squat','dumbbell-split-squat','seated-calf-raise','russian-twist','reverse-crunch'] }
+    ],
     4: [
       { chip:'Push', label:'Push Day', color:'chest', ex:['incline-barbell-bench-press','seated-dumbbell-press','decline-bench-press','seated-lateral-raise','bench-dips'] },
       { chip:'Legs', label:'Legs', color:'legs', ex:['front-squat','leg-extension','lying-leg-curl','dumbbell-split-squat','seated-calf-raise'] },
@@ -251,6 +275,18 @@ const PLANS = {
     ]
   },
   endo: {
+    1: [
+      { chip:'Full Circuit', label:'Full-Body Circuit', color:'full', ex:['kettlebell-thruster','goblet-squat','pushups','dumbbell-row','treadmill-jog'] }
+    ],
+    2: [
+      { chip:'Strength', label:'Full-Body Strength', color:'chest', ex:['goblet-squat','pushups','dumbbell-row','dumbbell-shoulder-press','plank-endo'] },
+      { chip:'Circuit', label:'Circuit & Cardio', color:'core', ex:['kettlebell-thruster','renegade-row','stationary-rowing','crunches','treadmill-jog'] }
+    ],
+    3: [
+      { chip:'Upper', label:'Upper Body', color:'chest', ex:['pushups','dumbbell-row','dumbbell-shoulder-press','dumbbell-bicep-curl'] },
+      { chip:'Lower', label:'Lower Body', color:'legs', ex:['goblet-squat','dumbbell-rdl','dumbbell-step-ups','standing-dumbbell-calf-raise'] },
+      { chip:'Circuit', label:'Circuit & Core', color:'core', ex:['kettlebell-thruster','renegade-row','crunches','rope-jumping'] }
+    ],
     4: [
       { chip:'Upper', label:'Upper Body', color:'chest', ex:['pushups','dumbbell-row','dumbbell-shoulder-press','tricep-kickback','dumbbell-bicep-curl'] },
       { chip:'Lower+Cardio', label:'Lower Body & Cardio', color:'legs', ex:['goblet-squat','dumbbell-rdl','dumbbell-step-ups','standing-dumbbell-calf-raise','rope-jumping'] },
@@ -286,7 +322,7 @@ const PLANS = {
 
 function getDaysPerWeek() {
   const p = getProfile();
-  return (p && [4,5,6,7].includes(p.daysPerWeek)) ? p.daysPerWeek : 4;
+  return (p && [1,2,3,4,5,6,7].includes(p.daysPerWeek)) ? p.daysPerWeek : 4;
 }
 // Resolves what the Plan page shows: the active custom routine, or the body-type template
 function currentPlan() {

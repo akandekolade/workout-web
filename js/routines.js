@@ -97,7 +97,7 @@ function renderRoutinesPage() {
           <div class="info-title">${BODY_TYPE_NAMES[bt]} ${inUse ? '<span class="ex-badge badge-legs">In use</span>' : ''}</div>
           <div class="info-body">${BODY_GUIDES[bt].subtitle}</div>
           <div class="seg" style="margin-top:10px" id="tpl-days-${bt}">
-            ${[4, 5, 6, 7].map(n => `<button class="${(inUse && getDaysPerWeek() === n) ? 'active' : ''}" onclick="useTemplate('${bt}',${n})">${n} days</button>`).join('')}
+            ${[1, 2, 3, 4, 5, 6, 7].map(n => `<button class="${(inUse && getDaysPerWeek() === n) ? 'active' : ''}" onclick="useTemplate('${bt}',${n})">${n}</button>`).join('')}
           </div>
         </div>
         ${thumbFor(PLANS[bt][4][0].ex[0])}
