@@ -10,12 +10,16 @@ const MUSCLE_GROUPS = {
 // ---------- exercise picker (shared by builder and day extras) ----------
 // When an isSelected(key) callback is passed, rows render a checkbox and picks
 // toggle: the builder uses this for multi-select with visible selection state.
+// Rows carry a photo thumbnail and the list can be narrowed with the same
+// muscle-group filter chips as the Exercise library.
 let pickerOnPick = null;
 let pickerIsSelected = null;
+let pickerFilter = 'all';
 
 function openExercisePicker(onPick, isSelected) {
   pickerOnPick = onPick;
   pickerIsSelected = isSelected || null;
+  pickerFilter = 'all';
   let el = document.getElementById('exercise-picker');
   if (!el) {
     el = document.createElement('div');
@@ -24,12 +28,18 @@ function openExercisePicker(onPick, isSelected) {
     el.innerHTML = `
       <div class="onboard-title">Pick an exercise</div>
       <input type="text" class="auth-input" id="picker-search" placeholder="Search exercises…" oninput="renderPickerList()"/>
+      <div class="lib-chips" id="picker-filters"></div>
       <div id="picker-list"></div>
       <button class="link-btn muted" onclick="closeExercisePicker()">Done</button>`;
     document.body.appendChild(el);
   }
   el.hidden = false;
   document.getElementById('picker-search').value = '';
+  renderPickerList();
+}
+
+function setPickerFilter(id) {
+  pickerFilter = id;
   renderPickerList();
 }
 
@@ -44,9 +54,17 @@ function closeExercisePicker() {
 function renderPickerList() {
   const listEl = document.getElementById('picker-list');
   if (!listEl) return;
+  const chipsEl = document.getElementById('picker-filters');
+  if (chipsEl) {
+    chipsEl.innerHTML = LIB_FILTERS.map(f =>
+      `<button class="lib-chip ${pickerFilter === f.id ? 'active' : ''}" onclick="setPickerFilter('${f.id}')">${f.label}</button>`
+    ).join('');
+  }
   const q = (document.getElementById('picker-search').value || '').trim().toLowerCase();
   const groups = {};
   EXERCISES.forEach(ex => {
+    if (pickerFilter === 'home') { if (!ex.home) return; }
+    else if (pickerFilter !== 'all' && ex.badgeClass !== pickerFilter) return;
     if (q && !ex.name.toLowerCase().includes(q) && !ex.badge.toLowerCase().includes(q)) return;
     const g = MUSCLE_GROUPS[ex.badgeClass] || 'Other';
     (groups[g] = groups[g] || []).push(ex);
@@ -56,7 +74,7 @@ function renderPickerList() {
     groups[g].map(ex => {
       const sel = pickerIsSelected ? pickerIsSelected(ex.key) : false;
       const box = pickerIsSelected ? `<span class="picker-checkbox ${sel ? 'on' : ''}">${sel ? '✓' : ''}</span>` : '';
-      return `<button class="picker-row ${sel ? 'selected' : ''}" onclick="pickExercise('${ex.key}')">${box}<span style="flex:1">${ex.name}</span><span class="picker-meta">${ex.sets}×${ex.reps}</span></button>`;
+      return `<button class="picker-row ${sel ? 'selected' : ''}" onclick="pickExercise('${ex.key}')">${box}<img class="ex-thumb picker-thumb" src="${IMAGE_BASE + ex.img}" alt="" loading="lazy"/><span class="picker-name"><span>${ex.name}</span><span class="picker-meta" style="margin-left:0">${ex.badge} · ${ex.sets}×${ex.reps}</span></span></button>`;
     }).join('')
   ).join('') || '<div class="empty-note">No exercises match.</div>';
 }
